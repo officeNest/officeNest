@@ -26,7 +26,7 @@ export default function Sidebar() {
   };
 
   return (
-    <div className="bg-[#244D4D] w-64 h-screen p-4 relative">
+    <div className="bg-[#0C2BA1] w-64 h-screen p-4 relative">
       {/* Super Admin Header */}
       <div className="flex items-center gap-2 text-white mb-6">
         <FaUserShield />
