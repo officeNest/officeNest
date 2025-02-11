@@ -10,6 +10,7 @@ import {
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import SignUp from "./pages/Signup";
+import AdminDashboard from "./pages/AdminDashboard";
 
 
 function App() {
@@ -22,6 +23,8 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
+          <Route path="/admindashboard" element={<AdminDashboard />} />
+
         </Routes>
       
     </>
