@@ -10,6 +10,7 @@ import {
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import SignUp from "./pages/Signup";
+import SignUpLandlord from "./pages/SignUpLandLord";
 
 
 function App() {
@@ -17,13 +18,12 @@ function App() {
 
   return (
     <>
-      
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<SignUp />} />
-        </Routes>
-      
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<SignUp />} />
+        <Route path="/signuplandlord" element={<SignUpLandlord />} />
+      </Routes>
     </>
   );
 }

@@ -115,7 +115,7 @@ const Login = () => {
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
       const idToken = await getIdToken(user);
-      const dbUrl = `https://task-manager-najjar-default-rtdb.firebaseio.com/users/${user.uid}.json?auth=${idToken}`;
+      const dbUrl = `https://officenest-380c1-default-rtdb.firebaseio.com/users/${user.uid}.json?auth=${idToken}`;
       const response = await axios.get(dbUrl);
 
       if (response.data) {
@@ -187,102 +187,76 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-purple-50 to-pink-50 flex items-center justify-center">
-      <div className="max-w-6xl mx-auto bg-white rounded-xl shadow-2xl overflow-hidden flex flex-col md:flex-row">
-        {/* Left Section - Visuals */}
-        <div className="w-full md:w-1/2 bg-gradient-to-r from-purple-600 to-pink-600 p-10 flex flex-col justify-center items-center text-white relative">
-          <div className="text-center">
-            <h1 className="text-5xl font-bold mb-4 animate-fade-in">
-              Welcome to <span className="text-yellow-300">EliteFit</span>
-            </h1>
-            <p className="text-lg mb-8 animate-fade-in-delay">
-              Join the ultimate fashion destination. Sign in to explore the
-              latest trends and exclusive collections.
-            </p>
-          </div>
-          <div
-            className="w-full h-64 bg-cover bg-center rounded-lg shadow-lg animate-float"
-            style={{
-              backgroundImage:
-                "url('https://images.unsplash.com/photo-1483985988355-763728e1935b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80')",
-            }}
-          />
-          <div className="absolute bottom-10 left-10 animate-bounce">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-12 w-12 text-yellow-300"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
-              />
-            </svg>
-          </div>
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="w-full max-w-4xl bg-white rounded-lg shadow-lg overflow-hidden">
+        {/* Header Section */}
+        <div className="bg-[#244D4D] p-8 text-center">
+          <h1 className="text-4xl font-bold text-white mb-2">
+            Office Rent Platform
+          </h1>
+          <p className="text-lg text-gray-200">
+            Sign in to manage your office spaces or find the perfect workspace.
+          </p>
         </div>
 
-        {/* Right Section - Form */}
-        <div className="w-full md:w-1/2 p-10">
-          <h2 className="text-3xl font-bold text-gray-900 mb-6">Sign In</h2>
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="space-y-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  {...register("email")}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent"
-                  placeholder="Enter email"
-                />
-                {errors.email && (
-                  <p className="text-sm text-red-600 mt-1">
-                    {errors.email.message}
-                  </p>
-                )}
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Password
-                </label>
-                <div className="relative">
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    {...register("password")}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent"
-                    placeholder="Enter password"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-3 text-gray-500 hover:text-purple-600"
-                  >
-                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                  </button>
-                </div>
-                {errors.password && (
-                  <p className="text-sm text-red-600 mt-1">
-                    {errors.password.message}
-                  </p>
-                )}
-              </div>
+        {/* Form Section */}
+        <div className="p-8">
+          <h2 className="text-2xl font-semibold text-[#244D4D] mb-6">
+            Sign In
+          </h2>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Email
+              </label>
+              <input
+                type="email"
+                {...register("email")}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#244D4D] focus:border-transparent"
+                placeholder="Enter email"
+              />
+              {errors.email && (
+                <p className="text-sm text-red-600 mt-1">
+                  {errors.email.message}
+                </p>
+              )}
             </div>
-            <div className="flex items-center justify-between mt-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Password
+              </label>
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  {...register("password")}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#244D4D] focus:border-transparent"
+                  placeholder="Enter password"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-3 text-gray-500 hover:text-[#244D4D]"
+                >
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              </div>
+              {errors.password && (
+                <p className="text-sm text-red-600 mt-1">
+                  {errors.password.message}
+                </p>
+              )}
+            </div>
+            <div className="flex items-center justify-between">
               <div className="flex items-center">
                 <input
                   id="remember-me"
                   name="remember-me"
                   type="checkbox"
-                  className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                  className="h-4 w-4 text-[#244D4D] focus:ring-[#244D4D] border-gray-300 rounded"
                 />
                 <label
                   htmlFor="remember-me"
-                  className="ml-2 block text-sm text-gray-900"
+                  className="ml-2 block text-sm text-gray-700"
                 >
                   Remember me
                 </label>
@@ -290,7 +264,7 @@ const Login = () => {
               <button
                 type="button"
                 onClick={handleForgotPassword}
-                className="text-sm text-purple-600 hover:text-purple-500"
+                className="text-sm text-[#244D4D] hover:text-[#1A3A3A]"
               >
                 Forgot password?
               </button>
@@ -299,7 +273,7 @@ const Login = () => {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 focus:ring-2 focus:ring-purple-600 focus:ring-offset-2 transition-all"
+                className="w-full px-4 py-2 bg-[#244D4D] text-white rounded-lg hover:bg-[#1A3A3A] focus:ring-2 focus:ring-[#244D4D] focus:ring-offset-2 transition-all"
               >
                 {isSubmitting ? (
                   <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto"></div>
@@ -310,7 +284,7 @@ const Login = () => {
               <button
                 type="button"
                 onClick={handleGoogleSignIn}
-                className="w-full flex justify-center items-center space-x-2 py-3 px-4 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-600 transition-colors duration-200 mt-4"
+                className="w-full flex justify-center items-center space-x-2 py-3 px-4 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#244D4D] transition-colors duration-200 mt-4"
               >
                 <img
                   src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
@@ -323,7 +297,7 @@ const Login = () => {
             <div className="mt-6 text-center">
               <p className="text-sm text-gray-600">
                 Don't have an account?{" "}
-                <Link to="/signup" className="text-purple-600 hover:underline">
+                <Link to="/signup" className="text-[#244D4D] hover:underline">
                   Sign Up
                 </Link>
               </p>
