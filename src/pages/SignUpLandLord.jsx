@@ -1,123 +1,100 @@
-import React, { useState } from "react";
-import { auth, db } from "../firebase";
-import { sendEmailVerification } from "firebase/auth";
-import { createUserWithEmailAndPassword, getIdToken } from "firebase/auth";
-import { useNavigate, Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import axios from "axios";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import Swal from "sweetalert2";
 import { Eye, EyeOff } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
+import { signUpLandlord } from "../store/slices/authSlice";
+
+const schema = yup.object({
+  fullName: yup.string().required("Full Name is required"),
+  phoneNumber: yup.string().required("Phone Number is required"),
+  email: yup.string().email("Invalid email").required("Email is required"),
+  nationalId: yup.string(),
+  propertyName: yup.string().required("Property Name is required"),
+  propertyAddress: yup.string().required("Property Address is required"),
+  numberOfOffices: yup
+    .number()
+    .typeError("Number of Offices must be a number")
+    .required("Number of Offices is required"),
+  propertyRegistrationNumber: yup.string(),
+  proofOfOwnership: yup.mixed().required("Proof of Ownership is required"),
+  idOrBusinessRegistration: yup
+    .mixed()
+    .required("ID or Business Registration Certificate is required"),
+  utilityBill: yup.mixed(),
+  agreeToTerms: yup
+    .boolean()
+    .oneOf([true], "You must agree to the Terms & Conditions"),
+  password: yup
+    .string()
+    .min(8, "Password must be at least 8 characters")
+    .required("Password is required"),
+  confirmPassword: yup
+    .string()
+    .oneOf([yup.ref("password"), null], "Passwords must match")
+    .required("Confirm Password is required"),
+});
 
 const SignUpLandlord = () => {
-  const schema = yup.object({
-    fullName: yup.string().required("Full Name is required"),
-    phoneNumber: yup.string().required("Phone Number is required"),
-    email: yup.string().email("Invalid email").required("Email is required"),
-    nationalId: yup.string(),
-    propertyName: yup.string().required("Property Name is required"),
-    propertyAddress: yup.string().required("Property Address is required"),
-    numberOfOffices: yup
-      .number()
-      .typeError("Number of Offices must be a number")
-      .required("Number of Offices is required"),
-    propertyRegistrationNumber: yup.string(),
-    proofOfOwnership: yup.mixed().required("Proof of Ownership is required"),
-    idOrBusinessRegistration: yup
-      .mixed()
-      .required("ID or Business Registration Certificate is required"),
-    utilityBill: yup.mixed(),
-    agreeToTerms: yup
-      .boolean()
-      .oneOf([true], "You must agree to the Terms & Conditions"),
-    password: yup
-      .string()
-      .min(8, "Password must be at least 8 characters")
-      .required("Password is required"),
-    confirmPassword: yup
-      .string()
-      .oneOf([yup.ref("password"), null], "Passwords must match")
-      .required("Confirm Password is required"),
-  });
-
   const navigate = useNavigate();
+
+  const dispatch = useDispatch();
+  const { isLoading } = useSelector((state) => state.auth);
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
 
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
   });
 
-  const password = watch("password", "");
+  const onSubmit = (data) => {
+    const userData = {
+      fullName: data.fullName,
+      phoneNumber: data.phoneNumber,
+      email: data.email,
+      nationalId: data.nationalId,
+      propertyName: data.propertyName,
+      propertyAddress: data.propertyAddress,
+      numberOfOffices: data.numberOfOffices,
+      propertyRegistrationNumber: data.propertyRegistrationNumber,
+      proofOfOwnership: data.proofOfOwnership[0]?.name,
+      idOrBusinessRegistration: data.idOrBusinessRegistration[0]?.name,
+      utilityBill: data.utilityBill ? data.utilityBill[0]?.name : null,
+      agreeToTerms: data.agreeToTerms,
+      password: data.password,
+    };
 
-  const onSubmit = async (data) => {
-    setIsLoading(true);
-    try {
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        data.email,
-        data.password
-      );
-      const user = userCredential.user;
-
-      await sendEmailVerification(user);
-
-      const idToken = await getIdToken(user);
-
-      const userData = {
-        fullName: data.fullName,
-        phoneNumber: data.phoneNumber,
-        email: data.email,
-        nationalId: data.nationalId,
-        propertyName: data.propertyName,
-        propertyAddress: data.propertyAddress,
-        numberOfOffices: data.numberOfOffices,
-        propertyRegistrationNumber: data.propertyRegistrationNumber,
-        proofOfOwnership: data.proofOfOwnership[0].name,
-        idOrBusinessRegistration: data.idOrBusinessRegistration[0].name,
-        utilityBill: data.utilityBill ? data.utilityBill[0].name : null,
-        agreeToTerms: data.agreeToTerms,
-        createdAt: new Date().toISOString(),
-        emailVerified: false,
-        role: "landlord",
-      };
-
-      const dbUrl = `https://officenest-380c1-default-rtdb.firebaseio.com/users/${user.uid}.json?auth=${idToken}`;
-
-      await axios.put(dbUrl, userData);
-      localStorage.setItem("user", JSON.stringify(userData));
-
-      Swal.fire({
-        icon: "success",
-        title: "Welcome!",
-        text: "Your account has been successfully created. Please check your email to verify your account.",
-        confirmButtonText: "Continue",
-        customClass: {
-          confirmButton: "bg-[#244D4D] text-white px-4 py-2 rounded-lg",
-        },
-      }).then(() => {
-        navigate("/verify-email");
+    dispatch(signUpLandlord(userData))
+      .then((user) => {
+        Swal.fire({
+          icon: "success",
+          title: "Welcome!",
+          text: "Your landlord account has been successfully created.",
+          confirmButtonText: "Continue",
+          customClass: {
+            confirmButton: "bg-[#244D4D] text-white px-4 py-2 rounded-lg",
+          },
+        }).then(() => {
+          navigate("/dashboard");
+        });
+      })
+      .catch((error) => {
+        Swal.fire({
+          icon: "error",
+          title: "Registration Failed",
+          text: error.message || "Something went wrong. Please try again.",
+          confirmButtonText: "Try Again",
+          customClass: {
+            confirmButton: "bg-[#244D4D] text-white px-4 py-2 rounded-lg",
+          },
+        });
       });
-    } catch (error) {
-      console.error(error);
-      Swal.fire({
-        icon: "error",
-        title: "Registration Failed",
-        text: error.message,
-        confirmButtonText: "Try Again",
-        customClass: {
-          confirmButton: "bg-[#244D4D] text-white px-4 py-2 rounded-lg",
-        },
-      });
-    } finally {
-      setIsLoading(false);
-    }
   };
 
   return (
@@ -154,12 +131,8 @@ const SignUpLandlord = () => {
                     {...register("fullName")}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#244D4D] focus:border-transparent"
                     placeholder="Enter full name"
+                    // readOnly
                   />
-                  {errors.fullName && (
-                    <p className="text-sm text-red-600 mt-1">
-                      {errors.fullName.message}
-                    </p>
-                  )}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -170,12 +143,8 @@ const SignUpLandlord = () => {
                     {...register("phoneNumber")}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#244D4D] focus:border-transparent"
                     placeholder="Enter phone number"
+                    // readOnly
                   />
-                  {errors.phoneNumber && (
-                    <p className="text-sm text-red-600 mt-1">
-                      {errors.phoneNumber.message}
-                    </p>
-                  )}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -186,12 +155,8 @@ const SignUpLandlord = () => {
                     {...register("email")}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#244D4D] focus:border-transparent"
                     placeholder="Enter email"
+                    // readOnly
                   />
-                  {errors.email && (
-                    <p className="text-sm text-red-600 mt-1">
-                      {errors.email.message}
-                    </p>
-                  )}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
