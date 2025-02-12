@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom"; // Import Link
 import Swal from "sweetalert2";
 import { signupUser } from "../features/authSlice";
 import { Eye, EyeOff } from "lucide-react";
@@ -31,8 +31,7 @@ const Signup = () => {
 
       console.log("Signup response:", response);
 
-      if (response.success) {
-        console.log("Showing SweetAlert");
+      if (response) {
         await Swal.fire({
           icon: "success",
           title: "Signup Successful",
@@ -119,6 +118,17 @@ const Signup = () => {
           >
             Create Account
           </button>
+
+          {/* Link to Login Page */}
+          <p className="text-center text-gray-600 mt-4">
+            Already have an account?{" "}
+            <Link
+              to="/login"
+              className="text-blue-600 font-medium hover:underline"
+            >
+              Login
+            </Link>
+          </p>
         </form>
       </div>
     </div>

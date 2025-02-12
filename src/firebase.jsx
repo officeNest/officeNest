@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
-import { getDatabase } from "firebase/database"; // Import Realtime Database
+import { getDatabase, ref, get, set } from "firebase/database"; // Import Realtime Database
 import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
@@ -22,3 +22,4 @@ export const storage = getStorage(app);
 export const googleProvider = new GoogleAuthProvider();
 
 export { app };
+export { ref, get, set };

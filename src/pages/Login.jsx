@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom"; // Import Link
 import Swal from "sweetalert2";
 import { loginUser } from "../features/authSlice";
 import { Eye, EyeOff } from "lucide-react";
@@ -91,6 +91,17 @@ const Login = () => {
           >
             Login
           </button>
+
+          {/* Link to Signup Page */}
+          <p className="text-center text-gray-600 mt-4">
+            Don't have an account?{" "}
+            <Link
+              to="/signup"
+              className="text-blue-600 font-medium hover:underline"
+            >
+              Sign up
+            </Link>
+          </p>
         </form>
       </div>
     </div>

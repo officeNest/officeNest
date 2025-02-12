@@ -1,18 +1,17 @@
+import Footer from "../components/Footer";
+import CategoryHome from "../components/CategoryHome";
+import HomeHero from "../components/HomeHero";
+import "../styles/main-style.css";
+import GridHome from "../components/GridHome";
 
-import Footer from "../components/Footer"
-import CategoryHome from "../components/CategoryHome"
-import HomeHero from "../components/HomeHero"
-import "../styles/main-style.css"
-import GridHome from "../components/GridHome"
-
-function Home (){
+function Home() {
   return (
     <>
-    <HomeHero/>
-    <GridHome/>
-    <Footer/>
+      <HomeHero />
+      <GridHome />
+      <Footer />
     </>
-  )
+  );
 }
 
-export default Home
+export default Home;
