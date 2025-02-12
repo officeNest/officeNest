@@ -15,14 +15,12 @@ import  Contact  from "./pages/Contact";
 import Payment from "./pages/payment";
 
 
+import AdminDashboard from "./pages/AdminDashboard";
 
 
 function App() {
-
-
   return (
     <>
-    
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
@@ -30,6 +28,7 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/payment" element={<Payment />} />
+        <Route path="/admindashboard" element={<AdminDashboard />} />
       </Routes>
     </>
   );
