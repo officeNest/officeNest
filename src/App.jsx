@@ -10,6 +10,11 @@ import {
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import SignUp from "./pages/Signup";
+import About from "./pages/About";
+import  Contact  from "./pages/Contact";
+import Payment from "./pages/payment";
+
+
 
 
 function App() {
@@ -17,13 +22,15 @@ function App() {
 
   return (
     <>
-      
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<SignUp />} />
-        </Routes>
-      
+    
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<SignUp />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/payment" element={<Payment />} />
+      </Routes>
     </>
   );
 }
