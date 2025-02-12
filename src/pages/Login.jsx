@@ -20,38 +20,14 @@ const Login = () => {
       const response = await dispatch(loginUser({ email, password })).unwrap();
 
       if (response.success) {
-        // Check if the role is "landlord" and the status is "approved"
-        if (response.role === "landlord") {
-          if (response.status === "approved") {
-            // Show success alert if the landlord is approved
-            await Swal.fire({
-              icon: "success",
-              title: "Login Successful",
-              text: "Welcome back, approved landlord!",
-              timer: 2000,
-              showConfirmButton: false,
-            });
-            // Navigate to the landlord dashboard
-            navigate("/dashboard");
-          } else {
-            // Show warning if the landlord is not approved yet
-            await Swal.fire({
-              icon: "warning",
-              title: "Approval Pending",
-              text: "Your account is awaiting approval from the admin.",
-            });
-          }
-        } else {
-          // If the user is not a landlord, navigate to the home page
-          await Swal.fire({
-            icon: "success",
-            title: "Login Successful",
-            text: "Welcome back!",
-            timer: 2000,
-            showConfirmButton: false,
-          });
-          navigate("/");
-        }
+        await Swal.fire({
+          icon: "success",
+          title: "Login Successful",
+          text: "Welcome back!",
+          timer: 2000,
+          showConfirmButton: false,
+        });
+        navigate("/");
       }
     } catch (error) {
       await Swal.fire({
@@ -59,18 +35,6 @@ const Login = () => {
         title: "Login Failed",
         text: error.message || "Invalid credentials. Please try again!",
       });
-    }
-  };
-
-  const fetchLandlordStatus = async (userId) => {
-    try {
-      const response = await fetch(`/api/users/${userId}`);
-      const data = await response.json();
-      console.log("Fetched landlord status:", data.status);
-      return data.status;
-    } catch (error) {
-      console.error("Error fetching landlord status:", error);
-      return "pending";
     }
   };
 

@@ -27,16 +27,9 @@ export const loginUser = createAsyncThunk(
       );
       const userData = extractUserData(userCredential.user);
 
-      // Fetch additional user data (role, status, etc.)
-      const userRef = ref(db, `users/${userCredential.user.uid}`);
-      const snapshot = await get(userRef);
-      const userDbData = snapshot.val();
-
       return {
         success: true,
         ...userData,
-        role: userDbData.role,
-        status: userDbData.status,
       };
     } catch (error) {
       console.error("Login error details:", error);
@@ -47,19 +40,7 @@ export const loginUser = createAsyncThunk(
 
 export const signupUser = createAsyncThunk(
   "auth/signup",
-  async (
-    {
-      email,
-      password,
-      role,
-      name,
-      propertyCount,
-      businessName,
-      phoneNumber,
-      address,
-    },
-    { rejectWithValue }
-  ) => {
+  async ({ email, password, name }, { rejectWithValue }) => {
     try {
       const userCredential = await createUserWithEmailAndPassword(
         auth,
@@ -73,15 +54,9 @@ export const signupUser = createAsyncThunk(
       await set(userRef, {
         uid: user.uid,
         email: user.email,
-        role,
+        role: "visitor",
         name,
-        propertyCount: role === "landlord" ? propertyCount : 0,
         status: "pending",
-        ...(role === "landlord" && {
-          businessName,
-          phoneNumber,
-          address,
-        }),
       });
 
       console.log("User data successfully stored in Firebase Database");
@@ -89,12 +64,8 @@ export const signupUser = createAsyncThunk(
       return {
         success: true,
         ...userData,
-        role,
+        role: "visitor",
         name,
-        propertyCount,
-        businessName,
-        phoneNumber,
-        address,
       };
     } catch (error) {
       console.error("Error storing user data in Firebase Database:", error);

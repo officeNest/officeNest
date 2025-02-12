@@ -9,13 +9,7 @@ const Signup = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [role, setRole] = useState("visitor");
   const [visitorName, setVisitorName] = useState("");
-  const [landlordName, setLandlordName] = useState("");
-  const [propertyCount, setPropertyCount] = useState(0);
-  const [businessName, setBusinessName] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [address, setAddress] = useState("");
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -26,15 +20,8 @@ const Signup = () => {
     const userData = {
       email,
       password,
-      role,
-      ...(role === "visitor" && { name: visitorName }),
-      ...(role === "landlord" && {
-        name: landlordName,
-        propertyCount,
-        businessName,
-        phoneNumber,
-        address,
-      }),
+      role: "visitor",
+      name: visitorName,
     };
 
     try {
@@ -54,7 +41,7 @@ const Signup = () => {
           showConfirmButton: false,
         });
 
-        navigate(role === "visitor" ? "/" : "/login");
+        navigate("/");
       }
     } catch (error) {
       console.error("Signup error:", error);
@@ -74,51 +61,21 @@ const Signup = () => {
           Create Account
         </h1>
 
-        {/* Role Selection */}
-        <div className="flex gap-4 mb-8">
-          <button
-            type="button"
-            className={`flex-1 py-3 rounded-lg font-medium transition-all duration-300 ${
-              role === "visitor"
-                ? "bg-blue-600 text-white shadow-md transform -translate-y-0.5"
-                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-            }`}
-            onClick={() => setRole("visitor")}
-          >
-            Visitor
-          </button>
-          <button
-            type="button"
-            className={`flex-1 py-3 rounded-lg font-medium transition-all duration-300 ${
-              role === "landlord"
-                ? "bg-blue-600 text-white shadow-md transform -translate-y-0.5"
-                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-            }`}
-            onClick={() => setRole("landlord")}
-          >
-            Landlord
-          </button>
-        </div>
-
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Name Field */}
-          {role === "visitor" && (
-            <div className="space-y-1">
-              <label className="block text-sm font-medium text-gray-700">
-                Full Name
-              </label>
-              <input
-                type="text"
-                value={visitorName}
-                onChange={(e) => setVisitorName(e.target.value)}
-                required
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                placeholder="Enter your full name"
-              />
-            </div>
-          )}
+          <div className="space-y-1">
+            <label className="block text-sm font-medium text-gray-700">
+              Full Name
+            </label>
+            <input
+              type="text"
+              value={visitorName}
+              onChange={(e) => setVisitorName(e.target.value)}
+              required
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+              placeholder="Enter your full name"
+            />
+          </div>
 
-          {/* Email Field */}
           <div className="space-y-1">
             <label className="block text-sm font-medium text-gray-700">
               Email Address
@@ -133,7 +90,6 @@ const Signup = () => {
             />
           </div>
 
-          {/* Password Field */}
           <div className="space-y-1">
             <label className="block text-sm font-medium text-gray-700">
               Password
@@ -157,65 +113,6 @@ const Signup = () => {
             </div>
           </div>
 
-          {/* Landlord Fields */}
-          {role === "landlord" && (
-            <>
-              <div className="space-y-1">
-                <label className="block text-sm font-medium text-gray-700">
-                  Full Name
-                </label>
-                <input
-                  type="text"
-                  value={landlordName}
-                  onChange={(e) => setLandlordName(e.target.value)}
-                  required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                  placeholder="Enter your full name"
-                />
-              </div>
-              <div className="space-y-1">
-                <label className="block text-sm font-medium text-gray-700">
-                  Business Name
-                </label>
-                <input
-                  type="text"
-                  value={businessName}
-                  onChange={(e) => setBusinessName(e.target.value)}
-                  required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                  placeholder="Business name"
-                />
-              </div>
-              <div className="space-y-1">
-                <label className="block text-sm font-medium text-gray-700">
-                  Phone Number
-                </label>
-                <input
-                  type="text"
-                  value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
-                  required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                  placeholder="Phone number"
-                />
-              </div>
-              <div className="space-y-1">
-                <label className="block text-sm font-medium text-gray-700">
-                  Address
-                </label>
-                <input
-                  type="text"
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
-                  required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                  placeholder="Business address"
-                />
-              </div>
-            </>
-          )}
-
-          {/* Submit Button */}
           <button
             type="submit"
             className="w-full py-3 px-4 bg-blue-600 text-white font-medium rounded-lg"
