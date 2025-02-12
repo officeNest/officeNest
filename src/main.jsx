@@ -8,10 +8,8 @@ import store from "./Store.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <BrowserRouter>
       <Provider store={store}>
         <App />
       </Provider>
-    </BrowserRouter>
   </StrictMode>
 );
