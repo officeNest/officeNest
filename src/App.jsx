@@ -1,4 +1,4 @@
-import { useState } from "react";
+
 import {
   BrowserRouter as Router,
   Routes,
@@ -17,6 +17,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import LandlordPage from "./pages/Landlord";
 import LandlordDashboard from "./pages/LandlordDashboard";
 import FormData from "./components/FormData";
+import PropertyListings from "./pages/PropertyListings";
 
 function App() {
   return (
@@ -37,7 +38,7 @@ function Layout() {
         <Route path="/" element={<Home />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/offices" element={<PropertiesDetails />} />
+        <Route path="/offices" element={<PropertyListings />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/payment" element={<Payment />} />
