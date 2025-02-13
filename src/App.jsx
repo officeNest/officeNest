@@ -18,21 +18,30 @@ import LandlordPage from "./pages/Landlord";
 
 function App() {
   return (
+    <Router>
+      <Layout />
+    </Router>
+  );
+}
+
+function Layout() {
+  const location = useLocation();
+  const hideNavbarRoutes = ["/login", "/signup"];
+
+  return (
     <>
-      <Router>
-        <Navbar />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/signup" element={<SignUp />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/offices" element={<PropertiesDetails />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/payment" element={<Payment />} />
-          <Route path="/be-a-landlord" element={<LandlordPage />} />
-          <Route path="/admindashboard" element={<AdminDashboard />} />
-        </Routes>
-      </Router>
+      {!hideNavbarRoutes.includes(location.pathname) && <Navbar />}
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/signup" element={<SignUp />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/offices" element={<PropertiesDetails />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/payment" element={<Payment />} />
+        <Route path="/be-a-landlord" element={<LandlordPage />} />
+        <Route path="/admindashboard" element={<AdminDashboard />} />
+      </Routes>
     </>
   );
 }

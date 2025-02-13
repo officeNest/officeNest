@@ -40,6 +40,7 @@ export const loginUser = createAsyncThunk(
       if (userSnapshot.exists()) {
         const userDetails = userSnapshot.val();
         userData.name = userDetails.name || "Guest";
+        userData.role = userDetails.role || "visitor"; // Default to visitor if no role is found
 
         localStorage.setItem("user", JSON.stringify(userData));
       }
