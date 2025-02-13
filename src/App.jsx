@@ -15,6 +15,7 @@ import  Contact  from "./pages/Contact";
 import Payment from "./pages/payment";
 import AdminDashboard from "./pages/AdminDashboard";
 import UserProfile from "./pages/UserProfile";
+import Booking from "./pages/Booking";
 
 
 function App() {
@@ -30,6 +31,7 @@ function App() {
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/payment" element={<Payment />} />
+          <Route path="/booking" element={<Booking />} />
           <Route path="/UserProfile" element={<UserProfile />} />
           <Route path="/admindashboard" element={<AdminDashboard />} />
         </Routes>
