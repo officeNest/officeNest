@@ -14,15 +14,14 @@ import About from "./pages/About";
 import  Contact  from "./pages/Contact";
 import Payment from "./pages/payment";
 import AdminDashboard from "./pages/AdminDashboard";
+import UserProfile from "./pages/UserProfile";
 
 
 function App() {
   return (
     <>
-
-
       <Router>
-        <Navbar/>
+        <Navbar />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/signup" element={<SignUp />} />
@@ -31,6 +30,7 @@ function App() {
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/payment" element={<Payment />} />
+          <Route path="/UserProfile" element={<UserProfile />} />
           <Route path="/admindashboard" element={<AdminDashboard />} />
         </Routes>
       </Router>
