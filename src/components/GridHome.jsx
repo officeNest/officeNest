@@ -1,32 +1,10 @@
 import React from 'react'
 
 function GridHome() {
-    const categories = [
-        {
-          title: "Serviced Offices",
-          description: "Office with services, fully furnished and ready to move in.",
-          image: "https://i.pinimg.com/736x/86/15/37/86153751fc7cb3b54071177d154223b3.jpg",
-        },
-        {
-          title: "Coworking Spaces",
-          description: "Desks in a shared workspace, also known as a coworking space.",
-          image: "https://i.pinimg.com/736x/30/d6/cb/30d6cb9776ce45c69093ce58bee6300e.jpg",
-        },
-        {
-          title: "Commercial Spaces",
-          description: "Long-term, unserviced industrial/workshops and leased spaces.",
-          image: "https://i.pinimg.com/736x/1e/c5/59/1ec55995b80edeeab65ef7daa1e64427.jpg",
-        },
-        {
-          title: "Private Offices",
-          description: "Fully furnished, dedicated office spaces for individuals or small teams",
-          image: "https://i.pinimg.com/736x/e2/b1/29/e2b129fbeb35854f85ce49bf3bb6d19a.jpg",
-        },
-      ];
-    
+
   return (
     <>
-    <h2 className="text-3xl font-bold text-center text-gray-800 mt-10">
+    <h2 className="text-3xl font-bold text-center text-gray-800 mt-15 mb-5">
       Explore Offices By Category
     </h2>
     <section className="bg-white">
@@ -41,7 +19,7 @@ function GridHome() {
 			</div>
 			<div className="col-span-2 sm:col-span-1 md:col-span-2 bg-stone-50">
 				<a href="" className="group relative flex flex-col overflow-hidden rounded-lg px-4 pb-4 pt-40 mb-4">
-					<img src="https://i.pinimg.com/736x/37/0f/a6/370fa627b6019f65671d025f18c26013.jpg" alt="" className="absolute inset-0 h-full w-full object-cover group-hover:scale-105 transition-transform duration-500 ease-in-out"/>
+					<img src="https://i.pinimg.com/736x/ec/6b/05/ec6b053f72a6a2e5ddfa491f5dd06c1d.jpg" alt="" className="absolute inset-0 h-full w-full object-cover group-hover:scale-105 transition-transform duration-500 ease-in-out"/>
 					<div className="absolute inset-0 bg-gradient-to-b from-gray-900/25 to-gray-900/5"></div>
 					<h3 className="z-10 text-2xl font-medium text-white absolute top-0 left-0 p-4 xs:text-xl md:text-3xl">Amphitheate space</h3>
 				</a>
