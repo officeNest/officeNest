@@ -6,6 +6,8 @@ import { IoLocationOutline } from "react-icons/io5";
 import Footer from "../components/Footer";
 import { useNavigate } from "react-router-dom";
 
+
+// filter
 const workspaceOptions = [
   { name: "All Workspaces", description: "Show all available workspaces" },
   { name: "Serviced Offices", description: "Dedicated office space for teams" },
@@ -55,21 +57,21 @@ function ImageSlider({ images }) {
 const PropertyListings = () => {
     const navigate= useNavigate();
   const dispatch = useDispatch();
-  const products = useSelector((state) => state.offices.offices); // جلب البيانات من Redux
+  const Properties = useSelector((state) => state.offices.offices); 
   const [filter, setFilter] = useState("All Workspaces");
 
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchProperties = async () => {
       try {
         const response = await fetch("https://officenest-380c1-default-rtdb.firebaseio.com/properties.json");
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
         const data = await response.json();
-        dispatch(setOffices(Object.values(data))); // تحديث Redux بالبيانات
+        dispatch(setOffices(Object.values(data)));
       } catch (error) {
-        console.error("Error fetching products:", error);
+        console.error("Error fetching Properties:", error);
       }
     };
-    fetchProducts();
+    fetchProperties();
   }, [dispatch]);
 
   function WorkspaceFilter({ onFilterChange }) {
@@ -112,7 +114,7 @@ const PropertyListings = () => {
 
   function ProList({ filteredType }) {
     const filteredListings =
-      filteredType === "All Workspaces" ? products : products.filter((listing) => listing.type === filteredType);
+      filteredType === "All Workspaces" ? Properties : Properties.filter((listing) => listing.type === filteredType);
 
     return (
         <>
@@ -122,14 +124,18 @@ const PropertyListings = () => {
            <ImageSlider images={listing.images || ["/default-image.jpg"]} />
             <div className="w-1/2 p-6 flex flex-col justify-between">
               <div>
-                <h2 onClick={()=> {navigate(`/offices/${listing.id}`)}} className="text-xl font-semibold text-gray-800">{listing.location}</h2>
-                <p className="text-gray-600 mt-2 text-sm">{listing.description}</p>
+              <h2 
+  className="text-xl font-semibold text-gray-800 cursor-pointer hover:underline"
+  onClick={() => navigate(`/PropertiesDetails`, { state: { listing } })} 
+>
+  {listing.location}
+</h2>                <p className="text-gray-600 mt-2 text-sm">{listing.description}</p>
               </div>
               <div className="mt-4">
                 <p className="text-gray-800 font-semibold">
                   {listing.type}: <span className="text-[#9D9D9D]">JOD{listing.price} / mth</span>
                 </p>
-                <button className="mt-6 bg-[#0C2BA1] hover:bg-[#9D9D9D] text-white py-2 px-4 rounded-lg w-50 ml-5">
+                <button onClick={()=>navigate(`/BookingPage`)}className="mt-6 bg-[#0C2BA1] hover:bg-[#9D9D9D] text-white py-2 px-4 rounded-lg w-50 ml-5">
                   Quick Quote
                 </button>
               </div>
