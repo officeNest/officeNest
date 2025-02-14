@@ -1,7 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-    offices: [] 
+    offices: [], 
+    selectedproperty: null 
 };
 
 const PropertyListingsSlice = createSlice({
@@ -10,9 +11,12 @@ const PropertyListingsSlice = createSlice({
     reducers: {
         setOffices: (state, action) => {
             state.offices = action.payload;
-        }
+        },
+        // setSelectedProperty: (state, action) => {
+        //     state.selectedproperty = action.payload; 
+        // }
     }
 });
 
-export const { setOffices } = PropertyListingsSlice.actions;
+export const { setOffices, setSelectedProperty } = PropertyListingsSlice.actions;
 export default PropertyListingsSlice.reducer;

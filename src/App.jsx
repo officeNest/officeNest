@@ -44,6 +44,7 @@ function Layout() {
         <Route path="/payment" element={<Payment />} />
         <Route path="/be-a-landlord" element={<LandlordPage />} />
         <Route path="/admindashboard" element={<AdminDashboard />} />
+        <Route path="/PropertiesDetails" element={<PropertiesDetails />} />
         <Route path="/landlordDashboard" element={<LandlordDashboard />} />
         <Route path="/formData" element={<FormData />} />
         <Route path="/request" element={<Request />} />
