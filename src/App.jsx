@@ -18,6 +18,7 @@ import LandlordPage from "./pages/Landlord";
 import LandlordDashboard from "./pages/LandlordDashboard";
 import FormData from "./components/FormData";
 import PropertyListings from "./pages/PropertyListings";
+import OfficeMap from "./components/OfficeMap";
 
 function App() {
   return (
@@ -39,6 +40,8 @@ function Layout() {
         <Route path="/signup" element={<SignUp />} />
         <Route path="/login" element={<Login />} />
         <Route path="/offices" element={<PropertyListings />} />
+        <Route path="/map/:id" element={<PropertiesDetails />} />
+        <Route path="/map" element={<OfficeMap />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/payment" element={<Payment />} />

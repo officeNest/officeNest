@@ -97,7 +97,7 @@ const PropertyListings = () => {
                   onFilterChange(option.name);
                 }}
                 className={`flex items-start p-3 rounded-lg cursor-pointer hover:bg-gray-100 ${
-                  selectedOption.name === option.name ? "text-green-600 font-semibold" : "text-gray-800"
+                  selectedOption.name === option.name ? "text-[#0C2BA1] font-semibold" : "text-gray-800"
                 }`}
               >
                 <div className="ml-2">
@@ -151,14 +151,14 @@ const PropertyListings = () => {
 
   return (
     <>
-    <div className="p-16 border-b">
+    <div className="p-20 border-b">
       <div className="flex justify-between items-center">
-        <h1 className="text-xl font-semibold">Office Space for Rent in Amman</h1>
+        <h1 className="text-xl font-semibold">Office Space for Rent in Jordan</h1>
         <div className="flex items-center gap-4">
-          <button className="flex items-center gap-1 border px-4 py-2 rounded-full text-[#0C2BA1] border-[#0C2BA1] shadow-sm hover:shadow-md">
+          <button className="flex items-center gap-1 cursor-pointer  border px-4 py-2 rounded-full text-[#0C2BA1] border-[#0C2BA1] shadow-sm hover:shadow-md">
             <FaListUl className="text-[#0C2BA1]" /> List
           </button>
-          <button className="flex items-center gap-1 border px-4 py-2 rounded-full text-gray-700 shadow-sm hover:shadow-md">
+          <button onClick={()=> navigate('/map') } className="flex cursor-pointer items-center gap-1 border px-4 py-2 rounded-full text-gray-700 shadow-sm hover:shadow-md">
             <IoLocationOutline className="text-gray-500" /> Map
           </button>
         </div>

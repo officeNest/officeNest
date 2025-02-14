@@ -1,15 +1,24 @@
 import Footer from "../components/Footer";
-import CategoryHome from "../components/CategoryHome";
+// import CategoryHome from "../components/CategoryHome";
 import HomeHero from "../components/HomeHero";
 import "../styles/main-style.css";
 import GridHome from "../components/GridHome";
 
-function Home() {
+import FeaturedOffices from "../components/FeaturedOffices"
+import TrustSection from "../components/TrustSection";
+import Testimonials from "../components/Testimonials";
+
+function Home (){
   return (
     <>
-      <HomeHero />
-      <GridHome />
-      <Footer />
+    <div className="pt-16">
+    <HomeHero/>
+    <GridHome/>
+    <FeaturedOffices/>
+    <TrustSection/>
+    <Testimonials/>
+    <Footer/>
+    </div>
     </>
   );
 }
