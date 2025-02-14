@@ -1,5 +1,10 @@
 import { useState, useEffect } from "react";
-import { FaTachometerAlt, FaEnvelope, FaHeart, FaUserShield } from "react-icons/fa";
+import {
+  FaTachometerAlt,
+  FaEnvelope,
+  FaHeart,
+  FaUserShield,
+} from "react-icons/fa";
 
 const menuItems = [
   { name: "Dashboard", icon: <FaTachometerAlt /> },
@@ -44,7 +49,9 @@ export default function Sidebar() {
             key={index}
             id={`menu-item-${index}`}
             className={`relative z-10 px-5 py-3 cursor-pointer transition-all duration-500 mb-4 ${
-              activeIndex === index ? "text-white font-bold bg-white/20 rounded-md" : "text-white"
+              activeIndex === index
+                ? "text-white font-bold bg-white/20 rounded-md"
+                : "text-white"
             }`}
             onClick={() => setActiveIndex(index)}
           >
