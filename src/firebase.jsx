@@ -1,8 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
-import { getDatabase } from "firebase/database"; // Import Realtime Database
+import { getDatabase, ref, get, set, push, onValue } from "firebase/database"; // Import Realtime Database
 import { getStorage } from "firebase/storage";
-import { ref, push, onValue } from "firebase/database";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDUJc9ZGLKLbm7vSb5eiQg7i-vFnAjAd3k",
@@ -22,4 +21,5 @@ export const db = getDatabase(app);
 export const storage = getStorage(app);
 export const googleProvider = new GoogleAuthProvider();
 
-export { ref, push, onValue, app };
+export { app };
+export { ref, get, set, push, onValue };
