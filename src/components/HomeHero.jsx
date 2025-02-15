@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate,Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 
 function HomeHero() {
   const [searchTerm, setSearchTerm] = useState("");
   const [locations, setLocations] = useState([]);
   const [filteredLocations, setFilteredLocations] = useState([]);
+  const [listings, setListings] = useState([]); // Stores all property data
   const navigate = useNavigate();
 
   // Fetch office locations from Firebase (Realtime Database)
@@ -17,8 +18,9 @@ function HomeHero() {
         ); // Replace with your Firebase URL
         const data = response.data;
         if (data) {
-          const locationList = Object.values(data).map((office) => office.location);
-          setLocations(locationList);
+          const listingsArray = Object.values(data);
+          setListings(listingsArray);
+          setLocations(listingsArray.map((office) => office.location));
         }
       } catch (error) {
         console.error("Error fetching locations:", error);
@@ -43,17 +45,23 @@ function HomeHero() {
     }
   };
 
-  // Handle selecting a location
+  // Handle selecting a location and navigate with listing data
   const handleSelectLocation = (location) => {
     setSearchTerm(location);
     setFilteredLocations([]);
-    navigate(`/offices/${location}`); // Navigate to office details page
+
+    const selectedListing = listings.find((office) => office.location === location);
+    if (selectedListing) {
+      navigate("/PropertiesDetails", { state: { listing: selectedListing } });
+    } else {
+      console.error("Office data not found for selected location");
+    }
   };
 
   return (
     <>
       <div className="relative w-full h-screen flex items-center text-white">
-        {/* Background Image */}
+        {/* Background Video */}
         <video
           className="absolute inset-0 w-full h-full object-cover"
           autoPlay
@@ -64,6 +72,7 @@ function HomeHero() {
           <source src="https://videos.pexels.com/video-files/8347237/8347237-uhd_2560_1440_25fps.mp4" type="video/mp4" />
           Your browser does not support the video tag.
         </video>
+        
 
         {/* Overlay */}
         <div className="absolute inset-0 bg-[#051A6C]/90 clip-diagonal"></div>
@@ -71,12 +80,11 @@ function HomeHero() {
         {/* Content */}
         <div className="relative z-10 max-w-4xl px-10 lg:px-20">
           <h1 className="text-3xl md:text-4xl max-w-[500px] mb-[40px] font-bold">
-          A Flexible Way to Work, A Faster Way to Rent!
+            A Flexible Way to Work, A Faster Way to Rent!
           </h1>
           <p className="mt-4 text-md max-w-[500px] text-white">
-            Explore modern office rentals tailored for freelancers, startups,
-            and established teams. Flexible terms, premium locations, and
-            effortless booking—all in one place.
+            Explore modern office rentals tailored for freelancers, startups, and established teams. 
+            Flexible terms, premium locations, and effortless booking—all in one place.
           </p>
 
           {/* Search Bar */}
@@ -90,25 +98,12 @@ function HomeHero() {
                 type="text"
               />
               <div className="absolute top-3 right-3">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="slate-300"
-                  viewBox="0 0 24 24"
-                  height="24"
-                  width="24"
-                >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="slate-300" viewBox="0 0 24 24" height="24" width="24">
                   <path d="M10.979 16.8991C11.0591 17.4633 10.6657 17.9926 10.0959 17.9994C8.52021 18.0183 6.96549 17.5712 5.63246 16.7026C4.00976 15.6452 2.82575 14.035 2.30018 12.1709C1.77461 10.3068 1.94315 8.31525 2.77453 6.56596C3.60592 4.81667 5.04368 3.42838 6.82101 2.65875C8.59833 1.88911 10.5945 1.79039 12.4391 2.3809C14.2837 2.97141 15.8514 4.21105 16.8514 5.86977C17.8513 7.52849 18.2155 9.49365 17.8764 11.4005C17.5979 12.967 16.8603 14.4068 15.7684 15.543C15.3736 15.9539 14.7184 15.8787 14.3617 15.4343C14.0051 14.9899 14.0846 14.3455 14.4606 13.9173C15.1719 13.1073 15.6538 12.1134 15.8448 11.0393C16.0964 9.62426 15.8261 8.166 15.0841 6.93513C14.3421 5.70426 13.1788 4.78438 11.81 4.34618C10.4412 3.90799 8.95988 3.98125 7.641 4.55236C6.32213 5.12348 5.25522 6.15367 4.63828 7.45174C4.02135 8.74982 3.89628 10.2276 4.28629 11.6109C4.67629 12.9942 5.55489 14.1891 6.75903 14.9737C7.67308 15.5693 8.72759 15.8979 9.80504 15.9333C10.3746 15.952 10.8989 16.3349 10.979 16.8991Z"></path>
-                  <rect
-                    transform="rotate(-49.6812 12.2469 14.8859)"
-                    rx="1"
-                    height="10.1881"
-                    width="2"
-                    y="14.8859"
-                    x="12.2469"
-                  ></rect>
+                  <rect transform="rotate(-49.6812 12.2469 14.8859)" rx="1" height="10.1881" width="2" y="14.8859" x="12.2469"></rect>
                 </svg>
               </div>
-              
+
               {/* Search Results Dropdown */}
               {filteredLocations.length > 0 && (
                 <ul className="absolute z-20 w-full bg-white border border-gray-200 rounded-md mt-1 max-h-40 overflow-y-auto">
@@ -126,8 +121,8 @@ function HomeHero() {
             </div>
           </div>
 
-          {/* CTA Button */}
-          <button className="overflow-hidden mt-[30px] relative w-52 p-2 h-10 bg-black text-white border-none rounded-md text-md font-bold cursor-pointer relative z-10 group">
+                   {/* CTA Button */}
+                   <button className="overflow-hidden mt-[30px] relative w-52 p-2 h-10 bg-black text-white border-none rounded-md text-md font-bold cursor-pointer relative z-10 group">
             <Link to="/offices">
             Book Your Space Now
             <span className="absolute w-36 h-32 -top-8 -left-2 bg-white rotate-8 transform scale-x-0 group-hover:scale-x-200 transition-transform group-hover:duration-500 duration-1000 origin-left"></span>
