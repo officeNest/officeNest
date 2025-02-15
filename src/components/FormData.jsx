@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import axios from "axios";
-
+import axios from "axios"; 
+import Nav from "./Nav";
 export default function FormData() {
   const [formData, setFormData] = useState({
     name: "",
@@ -70,7 +70,9 @@ export default function FormData() {
   };
 
   return (
-    <div className="relative flex flex-col justify-center min-h-screen overflow-hidden bg-gray-50">
+    <>
+    <Nav/>
+    <div className="relative flex flex-col justify-center min-h-screen overflow-hidden bg-gray-50 pt-20">
       <div className="w-full p-6 m-auto bg-white rounded-md shadow-xl ring-2 ring-indigo-600 lg:max-w-2xl">
         <h1 className="text-3xl font-semibold text-center text-indigo-700 underline uppercase decoration-wavy">
           Add Property
@@ -231,5 +233,6 @@ export default function FormData() {
         </form>
       </div>
     </div>
+    </>
   );
 }

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
 import Swal from "sweetalert2";
-import { loginUser } from "../features/authSlice";
+import { loginUser, loginWithGoogle } from "../features/authSlice";
 import { Eye, EyeOff } from "lucide-react";
 
 const Login = () => {
@@ -20,6 +20,15 @@ const Login = () => {
       const response = await dispatch(loginUser({ email, password })).unwrap();
 
       if (response.success) {
+        const userData = {
+          uid: response.uid,
+          email: response.email,
+          role: response.role,
+        };
+        localStorage.setItem("user", JSON.stringify(userData));
+
+        console.log("User data stored in localStorage:", userData);
+
         await Swal.fire({
           icon: "success",
           title: "Login Successful",
@@ -39,6 +48,34 @@ const Login = () => {
         icon: "error",
         title: "Login Failed",
         text: error.message || "Invalid credentials. Please try again!",
+      });
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      const response = await dispatch(loginWithGoogle()).unwrap();
+
+      if (response) {
+        await Swal.fire({
+          icon: "success",
+          title: "Login Successful",
+          text: "Welcome back!",
+          timer: 2000,
+          showConfirmButton: false,
+        });
+
+        if (response.role === "owner") {
+          navigate("/landlorddashboard");
+        } else {
+          navigate("/");
+        }
+      }
+    } catch (error) {
+      await Swal.fire({
+        icon: "error",
+        title: "Login Failed",
+        text: error.message || "Something went wrong!",
       });
     }
   };
@@ -137,6 +174,19 @@ const Login = () => {
                 className="w-full bg-[#0C2BA1] text-white py-3 rounded-md hover:bg-[#0A247A] transition-colors duration-200 font-medium"
               >
                 Sign in to your account
+              </button>
+
+              <button
+                type="button"
+                onClick={handleGoogleLogin}
+                className="w-full bg-red-600 text-white py-3 rounded-md hover:bg-red-700 transition-colors duration-200 font-medium flex items-center justify-center"
+              >
+                <img
+                  src="https://img.icons8.com/color/24/000000/google-logo.png"
+                  alt="Google Logo"
+                  className="mr-2"
+                />
+                Sign in with Google
               </button>
 
               <div className="text-center text-sm text-gray-600">

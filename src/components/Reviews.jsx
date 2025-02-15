@@ -17,20 +17,26 @@ function Reviews({ officeId }) {
   useEffect(() => {
     fetchReviews();
   }, [officeId]);
-  console.log(officeId);
 
   const fetchReviews = async () => {
     try {
       const response = await axios.get(
-        `https://officenest-380c1-default-rtdb.firebaseio.com/reviews.json?orderBy="officeId"&equalTo="${officeId}"`
+        `https://officenest-380c1-default-rtdb.firebaseio.com/reviews.json`
       );
       const reviewsData = response.data;
+
       if (reviewsData) {
-        const reviewsArray = Object.keys(reviewsData).map((key) => ({
-          id: key,
-          ...reviewsData[key],
-        }));
+        // Convert the object of reviews into an array and filter by officeId
+        const reviewsArray = Object.keys(reviewsData)
+          .map((key) => ({
+            id: key,
+            ...reviewsData[key],
+          }))
+          .filter((review) => review.officeId === officeId); // Filter reviews by officeId
+
         setReviews(reviewsArray);
+      } else {
+        setReviews([]); // No reviews found
       }
     } catch (error) {
       console.error('Error fetching reviews:', error);
@@ -64,18 +70,18 @@ function Reviews({ officeId }) {
       ...reviewData,
       officeId,
       userId: user.uid,
-      userName: user.displayName || 'Anonymous',
+      userName: user.name || 'Anonymous',
       timestamp: new Date().toISOString(),
     };
 
     try {
       await axios.post(
-        'https://officenest-380c1-default-rtdb.firebaseio.com/reviews.json',
+        `https://officenest-380c1-default-rtdb.firebaseio.com/reviews.json`,
         reviewPayload
       );
       alert('Review added successfully!');
       closeModal();
-      fetchReviews();
+      fetchReviews(); // Fetch reviews again to update the list
     } catch (error) {
       console.error('Error adding review:', error);
       alert('Failed to add review.');
@@ -125,35 +131,39 @@ function Reviews({ officeId }) {
             </div>
 
             <div className="mt-6 min-w-0 flex-1 space-y-3 sm:mt-0">
-              {reviews.map((review) => (
-                <div key={review.id} className="gap-3 py-6 sm:flex sm:items-start">
-                  <div className="shrink-0 space-y-2 sm:w-48 md:w-72">
-                    <div className="flex items-center gap-0.5">
-                      {[...Array(review.rating)].map((_, i) => (
-                        <svg
-                          key={i}
-                          className="h-4 w-4 text-yellow-300"
-                          aria-hidden="true"
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="24"
-                          height="24"
-                          fill="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path d="M13.849 4.22c-.684-1.626-3.014-1.626-3.698 0L8.397 8.387l-4.552.361c-1.775.14-2.495 2.331-1.142 3.477l3.468 2.937-1.06 4.392c-.413 1.713 1.472 3.067 2.992 2.149L12 19.35l3.897 2.354c1.52.918 3.405-.436 2.992-2.15l-1.06-4.39 3.468-2.938c1.353-1.146.633-3.336-1.142-3.477l-4.552-.36-1.754-4.17Z" />
-                        </svg>
-                      ))}
+              {reviews.length > 0 ? (
+                reviews.map((review) => (
+                  <div key={review.id} className="gap-3 py-6 sm:flex sm:items-start">
+                    <div className="shrink-0 space-y-2 sm:w-48 md:w-72">
+                      <div className="flex items-center gap-0.5">
+                        {[...Array(review.rating)].map((_, i) => (
+                          <svg
+                            key={i}
+                            className="h-4 w-4 text-yellow-300"
+                            aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path d="M13.849 4.22c-.684-1.626-3.014-1.626-3.698 0L8.397 8.387l-4.552.361c-1.775.14-2.495 2.331-1.142 3.477l3.468 2.937-1.06 4.392c-.413 1.713 1.472 3.067 2.992 2.149L12 19.35l3.897 2.354c1.52.918 3.405-.436 2.992-2.15l-1.06-4.39 3.468-2.938c1.353-1.146.633-3.336-1.142-3.477l-4.552-.36-1.754-4.17Z" />
+                          </svg>
+                        ))}
+                      </div>
+                      <div className="space-y-0.5">
+                        <p className="text-base font-semibold text-gray-900 dark:text-white">{review.userName}</p>
+                        <p className="text-sm font-normal text-gray-500 dark:text-gray-400">{new Date(review.timestamp).toLocaleDateString()}</p>
+                      </div>
                     </div>
-                    <div className="space-y-0.5">
-                      <p className="text-base font-semibold text-gray-900 dark:text-white">{review.userName}</p>
-                      <p className="text-sm font-normal text-gray-500 dark:text-gray-400">{new Date(review.timestamp).toLocaleDateString()}</p>
+                    <div className="mt-4 min-w-0 flex-1 space-y-4 sm:mt-0">
+                      <p className="text-base font-normal text-gray-500 dark:text-gray-400">{review.description}</p>
                     </div>
                   </div>
-                  <div className="mt-4 min-w-0 flex-1 space-y-4 sm:mt-0">
-                    <p className="text-base font-normal text-gray-500 dark:text-gray-400">{review.description}</p>
-                  </div>
-                </div>
-              ))}
+                ))
+              ) : (
+                <p>No reviews yet. Be the first to add one!</p>
+              )}
             </div>
           </div>
         </div>
