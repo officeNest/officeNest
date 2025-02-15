@@ -137,120 +137,142 @@ const UserProfile = () => {
   };
 
   return (
-  <div className="min-h-screen bg-white p-6">
-    <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-xl p-8">
-      <h1 className="text-3xl font-bold mb-8 text-[#0C2BA1] text-center">User Profile</h1>
+    <div className="min-h-screen bg-white p-6">
+      <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-xl p-8">
+        <h1 className="text-3xl font-bold mb-8 text-[#0C2BA1] text-center">
+          User Profile
+        </h1>
 
-      {/* Profile Image */}
-      <div className="flex flex-col items-center mb-12 relative">
-        <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-[#0C2BA1]/20 hover:border-[#0C2BA1]/40 transition-colors duration-300">
-          <img
-            src={editableProfile.profileImage || "https://via.placeholder.com/150"}
-            alt="Profile"
-            className="w-full h-full object-cover"
+        {/* Profile Image */}
+        <div className="flex flex-col items-center mb-12 relative">
+          <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-[#0C2BA1]/20 hover:border-[#0C2BA1]/40 transition-colors duration-300">
+            <img
+              src={
+                editableProfile.profileImage ||
+                "https://via.placeholder.com/150"
+              }
+              alt="Profile"
+              className="w-full h-full object-cover"
+            />
+          </div>
+          <label
+            htmlFor="profileImageUpload"
+            className="mt-2 flex items-center gap-2 text-[#0C2BA1] hover:text-[#0A2472] cursor-pointer transition-colors duration-300"
+          >
+            <FaCamera className="text-lg" />
+            <span className="text-sm font-medium">Change Photo</span>
+          </label>
+          <input
+            id="profileImageUpload"
+            type="file"
+            accept="image/*"
+            onChange={handleImageUpload}
+            className="hidden"
           />
         </div>
-        <label
-          htmlFor="profileImageUpload"
-          className="mt-2 flex items-center gap-2 text-[#0C2BA1] hover:text-[#0A2472] cursor-pointer transition-colors duration-300"
-        >
-          <FaCamera className="text-lg" />
-          <span className="text-sm font-medium">Change Photo</span>
-        </label>
-        <input
-          id="profileImageUpload"
-          type="file"
-          accept="image/*"
-          onChange={handleImageUpload}
-          className="hidden"
-        />
-      </div>
 
-      {/* Account Details */}
-      <div className="mb-8 space-y-6">
-        <h2 className="text-2xl font-semibold mb-6 text-[#0C2BA1] border-b pb-2">
-          Account Details
-        </h2>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Name Field */}
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">Full Name</label>
-            <input
-              type="text"
-              value={editableProfile.name}
-              onChange={(e) =>
-                setEditableProfile({ ...editableProfile, name: e.target.value })
-              }
-              placeholder="Enter your full name"
-              className="w-full p-3 border rounded-lg focus:border-[#0C2BA1] focus:ring-2 focus:ring-[#0C2BA1]/20 outline-none transition-all"
-            />
-          </div>
+        {/* Account Details */}
+        <div className="mb-8 space-y-6">
+          <h2 className="text-2xl font-semibold mb-6 text-[#0C2BA1] border-b pb-2">
+            Account Details
+          </h2>
 
-          {/* Email Field */}
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">Email Address</label>
-            <input
-              type="email"
-              value={user.email}
-              readOnly
-              className="w-full p-3 border rounded-lg bg-gray-50 text-gray-600"
-            />
-          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Name Field */}
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700">
+                Full Name
+              </label>
+              <input
+                type="text"
+                value={editableProfile.name}
+                onChange={(e) =>
+                  setEditableProfile({
+                    ...editableProfile,
+                    name: e.target.value,
+                  })
+                }
+                placeholder="Enter your full name"
+                className="w-full p-3 border rounded-lg focus:border-[#0C2BA1] focus:ring-2 focus:ring-[#0C2BA1]/20 outline-none transition-all"
+              />
+            </div>
 
-          {/* Role Field */}
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">Role</label>
-            <input
-              type="text"
-              value={user.role}
-              readOnly
-              className="w-full p-3 border rounded-lg bg-gray-50 text-gray-600"
-            />
-          </div>
+            {/* Email Field */}
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700">
+                Email Address
+              </label>
+              <input
+                type="email"
+                value={user.email}
+                readOnly
+                className="w-full p-3 border rounded-lg bg-gray-50 text-gray-600"
+              />
+            </div>
 
-          {/* Phone Field */}
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">Phone Number</label>
-            <input
-              type="text"
-              value={editableProfile.phone}
-              onChange={(e) =>
-                setEditableProfile({
-                  ...editableProfile,
-                  phone: e.target.value,
-                })
-              }
-              placeholder="Enter your phone number"
-              className="w-full p-3 border rounded-lg focus:border-[#0C2BA1] focus:ring-2 focus:ring-[#0C2BA1]/20 outline-none transition-all"
-            />
-          </div>
+            {/* Role Field */}
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700">
+                Role
+              </label>
+              <input
+                type="text"
+                value={user.role}
+                readOnly
+                className="w-full p-3 border rounded-lg bg-gray-50 text-gray-600"
+              />
+            </div>
 
-          {/* City Field */}
-          <div className="space-y-2 md:col-span-2">
-            <label className="block text-sm font-medium text-gray-700">City</label>
-            <input
-              type="text"
-              value={editableProfile.city}
-              onChange={(e) =>
-                setEditableProfile({ ...editableProfile, city: e.target.value })
-              }
-              placeholder="Enter your city"
-              className="w-full p-3 border rounded-lg focus:border-[#0C2BA1] focus:ring-2 focus:ring-[#0C2BA1]/20 outline-none transition-all"
-            />
+            {/* Phone Field */}
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700">
+                Phone Number
+              </label>
+              <input
+                type="text"
+                value={editableProfile.phone}
+                onChange={(e) =>
+                  setEditableProfile({
+                    ...editableProfile,
+                    phone: e.target.value,
+                  })
+                }
+                placeholder="Enter your phone number"
+                className="w-full p-3 border rounded-lg focus:border-[#0C2BA1] focus:ring-2 focus:ring-[#0C2BA1]/20 outline-none transition-all"
+              />
+            </div>
+
+            {/* City Field */}
+            <div className="space-y-2 md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700">
+                City
+              </label>
+              <input
+                type="text"
+                value={editableProfile.city}
+                onChange={(e) =>
+                  setEditableProfile({
+                    ...editableProfile,
+                    city: e.target.value,
+                  })
+                }
+                placeholder="Enter your city"
+                className="w-full p-3 border rounded-lg focus:border-[#0C2BA1] focus:ring-2 focus:ring-[#0C2BA1]/20 outline-none transition-all"
+              />
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Save Button */}
-      <button
-        onClick={handleUpdate}
-        className="w-full md:w-auto md:px-12 bg-[#0C2BA1] text-white py-3 rounded-lg hover:bg-[#0A2472] transition duration-300 font-medium text-sm flex items-center justify-center mx-auto"
-      >
-        Save Changes
-      </button>
+        {/* Save Button */}
+        <button
+          onClick={handleUpdate}
+          className="w-full md:w-auto md:px-12 bg-[#0C2BA1] text-white py-3 rounded-lg hover:bg-[#0A2472] transition duration-300 font-medium text-sm flex items-center justify-center mx-auto"
+        >
+          Save Changes
+        </button>
+      </div>
     </div>
-  </div>
-);};
+  );
+};
 
 export default UserProfile;

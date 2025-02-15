@@ -4,6 +4,11 @@ import authReducer from "./features/authSlice";
 import userReducer from "./features/userSlice";
 import bookingReducer from "./features/bookingSlice";
 import officeReducer from "./features/PropertyListingsSlice";
+import userReducer from "./features/userSlice";
+import bookingReducer from "./features/bookingSlice";
+import requestsReducer from "./features/requestsSlice";
+import usersReducer from "./features/usersslice";
+import officesReducer from "./features/officesSlice";
 
 
 const store = configureStore({
@@ -12,7 +17,11 @@ const store = configureStore({
     user: userReducer,
     booking: bookingReducer,
     offices: officeReducer,
-  
+    user: userReducer,
+    booking: bookingReducer,
+    requests: requestsReducer,
+    users: usersReducer,
+    offices: officesReducer,
   },
 });
 
