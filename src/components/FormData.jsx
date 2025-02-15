@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import axios from "axios"; 
+import axios from "axios";
 
 export default function FormData() {
   const [formData, setFormData] = useState({
@@ -14,43 +14,36 @@ export default function FormData() {
     video: null,
     approvment: true,
     description: "",
+    ownerId: "",
+    latitude: "",
+    longitude: "",
   });
 
   const handleChange = (e) => {
-    const { name, value, type, files } = e.target;
-    if (type === "file") {
-      if (name === "images") {
-        setFormData({ ...formData, images: [...files] });
-      } else {
-        setFormData({ ...formData, video: files[0] });
-      }
-    } else {
-      setFormData({ ...formData, [name]: value });
-    }
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
-    const user = JSON.parse(localStorage.getItem("user")); // جلب بيانات المستخدم من Redux أو localStorage
-  
+
+    const user = JSON.parse(localStorage.getItem("user"));
     if (!user || !user.uid) {
       alert("You must be logged in to add a property!");
       return;
     }
-  
-    const firebaseUrl = `https://officenest-380c1-default-rtdb.firebaseio.com/properties/${user.uid}.json`;
-  
+
+    const firebaseUrl = `https://officenest-380c1-default-rtdb.firebaseio.com/properties.json`;
+
     const propertyData = {
       ...formData,
-      images: formData.images.map((file) => file.name),
-      video: formData.video ? formData.video.name : null,
-      owner: {
-        uid: user.uid,
-        email: user.email,
-        name: user.name || "Unknown Owner",
-      },
+      images: formData.images.split(",").map((url) => url.trim()),
+      ownerId: user.uid,
+      lat: formData.latitude,
+      lng: formData.longitude,
     };
-  
+
+
     try {
       await axios.post(firebaseUrl, propertyData);
       alert("Property Added Successfully!");
@@ -66,13 +59,15 @@ export default function FormData() {
         video: null,
         approvment: false,
         description: "",
+        ownerId: "",
+        latitude: "",
+        longitude: "",
       });
     } catch (error) {
       console.error("Error adding property:", error);
       alert("Failed to add property.");
     }
   };
-  
 
   return (
     <div className="relative flex flex-col justify-center min-h-screen overflow-hidden bg-gray-50">
@@ -121,6 +116,32 @@ export default function FormData() {
               onChange={handleChange}
               required
               value={formData.location}
+            />
+          </div>
+
+          <div className="mb-2">
+            <label className="text-gray-700">Latitude</label>
+            <input
+              type="number"
+              name="latitude"
+              className="w-full px-4 py-2 mt-2 border-2 border-gray-500 rounded-md focus:border-indigo-600 focus:ring focus:ring-indigo-300"
+              placeholder="Enter latitude"
+              onChange={handleChange}
+              required
+              value={formData.latitude}
+            />
+          </div>
+
+          <div className="mb-2">
+            <label className="text-gray-700">Longitude</label>
+            <input
+              type="number"
+              name="longitude"
+              className="w-full px-4 py-2 mt-2 border-2 border-gray-500 rounded-md focus:border-indigo-600 focus:ring focus:ring-indigo-300"
+              placeholder="Enter longitude"
+              onChange={handleChange}
+              required
+              value={formData.longitude}
             />
           </div>
 
@@ -176,14 +197,15 @@ export default function FormData() {
           </div>
 
           <div className="mb-2">
-            <label className="text-gray-700">Upload Images</label>
+          <label className="text-gray-700">Image URLs (comma separated)</label>
             <input
-              type="file"
+              type="text"
               name="images"
-              accept="image/*"
-              multiple
               className="w-full px-4 py-2 mt-2 border-2 border-gray-500 rounded-md focus:border-indigo-600 focus:ring focus:ring-indigo-300"
+              placeholder="Enter image URLs separated by commas"
               onChange={handleChange}
+              required
+              value={formData.images}
             />
           </div>
 

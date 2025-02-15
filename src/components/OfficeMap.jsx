@@ -14,28 +14,39 @@ import {
 // Replace with your actual Firebase database URL
 const firebaseURL = "https://officenest-380c1-default-rtdb.firebaseio.com/properties.json";
 
-const PoiMarkers = ({ pois, navigate }) => {
+
+
+const PoiMarkers = ({ pois = [], navigate, listings = [] }) => {
   return (
     <>
-      {pois.map((poi) => (
-        <AdvancedMarker
-          key={poi.key}
-          position={poi.location}
-          onClick={() => navigate(`/map/${poi.key}`)} // Navigate to office details
-        >
-          <Pin background="#0C2BA1" glyphColor="white" borderColor="white" />
-        </AdvancedMarker>
-      ))}
+      {pois.map((poi) => {
+        // Find the listing where office.id matches poi.key
+        const listing = listings.find((office) => office.id === poi.key);
+        console.log(listings);
+        return (
+          <AdvancedMarker
+            key={String(poi.key)} // Ensure key is a string
+            position={poi.location}
+            onClick={() => {
+                navigate("/PropertiesDetails", { state: { listing } }); // Pass found listing
+              }
+            }
+          >
+            <Pin background="#0C2BA1" glyphColor="white" borderColor="white" />
+          </AdvancedMarker>
+        );
+      })}
     </>
   );
 };
+
 
 
 function OfficeMap() {
   const navigate = useNavigate();
   const [offices, setOffices] = useState([]);
   const [scrolled, setScrolled] = useState(false);
-  
+  const [listings, setListings] = useState([]);
     // Handle scroll effect
     useEffect(() => {
       const handleScroll = () => {
@@ -50,6 +61,12 @@ function OfficeMap() {
       try {
         const response = await axios.get(firebaseURL);
         if (response.data) {
+          const listingsArray = Object.keys(response.data).map((key) => ({
+            id: key, // Assign Firebase key as ID
+            ...response.data[key], // Spread the rest of the property data
+          }));
+          
+          setListings(listingsArray);
           const officeList = Object.keys(response.data).map((key) => ({
             key,
             location: {
@@ -95,7 +112,7 @@ function OfficeMap() {
           mapId="83120833d3c052c4"
         >
           {/* Pass navigate function */}
-          <PoiMarkers pois={offices} navigate={navigate} />
+          <PoiMarkers pois={offices} navigate={navigate} listings={listings} />
         </Map>
       </APIProvider>
     </>

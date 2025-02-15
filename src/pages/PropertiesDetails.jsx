@@ -3,6 +3,7 @@ import { AiOutlineArrowLeft } from "react-icons/ai";
 import { useLocation, useNavigate } from "react-router-dom";
 import FAQ from "../components/FAQ"; 
 import Footer from "../components/Footer"
+import Reviews from "../components/Reviews";
 
 const PropertiesDetails = () => {
   const location = useLocation();
@@ -139,6 +140,7 @@ const PropertiesDetails = () => {
        {/* FAQ Section */}
        <FAQ />
     </div>
+    <Reviews officeId={listing.id}/>
     <Footer/>
     </>
   );
