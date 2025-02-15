@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { createBooking } from "../features/bookingSlice";
 import Swal from "sweetalert2";
-import { Calendar, Users, ArrowRight } from "lucide-react";
+import { Calendar, Users } from "lucide-react";
 
 const Booking = () => {
   const { propertyId } = useParams(); // Get propertyId from URL params
@@ -34,32 +34,10 @@ const Booking = () => {
       return;
     }
 
-    dispatch(
-      createBooking({
-        userId,
-        propertyId,
-        checkInDate,
-        checkOutDate,
-        numberOfPeople,
-      })
-    )
-      .unwrap()
-      .then(() => {
-        Swal.fire({
-          icon: "success",
-          title: "Booking Confirmed",
-          text: "Your booking request has been sent successfully!",
-          confirmButtonText: "OK",
-        });
-        navigate("/");
-      })
-      .catch((error) => {
-        Swal.fire({
-          icon: "error",
-          title: "Booking Failed",
-          text: error || "Something went wrong.",
-        });
-      });
+    // Navigate to the payment page with booking details as URL parameters
+    navigate(
+      `/payment/${propertyId}?checkInDate=${checkInDate}&checkOutDate=${checkOutDate}&numberOfPeople=${numberOfPeople}`
+    );
   };
 
   return (
