@@ -96,7 +96,7 @@ function Navbar() {
                   <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 transform opacity-100 scale-100 transition-all duration-200 origin-top-right">
                     <div className="py-1">
                       <Link
-                        to="/profile"
+                        to="/userprofile"
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150"
                       >
                         Profile

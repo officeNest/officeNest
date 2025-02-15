@@ -1,9 +1,10 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { auth, db } from "../firebase";
+import { auth, db, googleProvider } from "../firebase";
 import { ref, set, get } from "firebase/database";
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  signInWithPopup,
 } from "firebase/auth";
 
 const extractUserData = (user) => {
@@ -16,13 +17,11 @@ const extractUserData = (user) => {
   };
 };
 
-// Load user from localStorage (if exists)
 const loadUserFromStorage = () => {
   const storedUser = localStorage.getItem("user");
   return storedUser ? JSON.parse(storedUser) : null;
 };
 
-// Login user
 export const loginUser = createAsyncThunk(
   "auth/login",
   async ({ email, password }, { rejectWithValue }) => {
@@ -40,7 +39,7 @@ export const loginUser = createAsyncThunk(
       if (userSnapshot.exists()) {
         const userDetails = userSnapshot.val();
         userData.name = userDetails.name || "Guest";
-        userData.role = userDetails.role || "visitor"; // Default to visitor if no role is found
+        userData.role = userDetails.role || "visitor";
 
         localStorage.setItem("user", JSON.stringify(userData));
       }
@@ -52,7 +51,6 @@ export const loginUser = createAsyncThunk(
   }
 );
 
-// Signup user
 export const signupUser = createAsyncThunk(
   "auth/signup",
   async ({ email, password, name }, { rejectWithValue }) => {
@@ -84,7 +82,42 @@ export const signupUser = createAsyncThunk(
   }
 );
 
-// Logout user
+export const loginWithGoogle = createAsyncThunk(
+  "auth/loginWithGoogle",
+  async (_, { rejectWithValue }) => {
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      const user = result.user;
+      const userData = extractUserData(user);
+
+      const userRef = ref(db, `users/${user.uid}`);
+      const userSnapshot = await get(userRef);
+
+      if (!userSnapshot.exists()) {
+        await set(userRef, {
+          uid: user.uid,
+          email: user.email,
+          role: "visitor",
+          name: user.displayName || "Guest",
+          status: "active",
+        });
+      }
+
+      const fullUserData = {
+        ...userData,
+        role: "visitor",
+        name: user.displayName || "Guest",
+      };
+
+      localStorage.setItem("user", JSON.stringify(fullUserData));
+
+      return fullUserData;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 export const logoutUser = () => (dispatch) => {
   localStorage.removeItem("user");
   dispatch(logout());
@@ -128,6 +161,18 @@ const authSlice = createSlice({
         state.role = action.payload.role;
       })
       .addCase(signupUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(loginWithGoogle.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(loginWithGoogle.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload;
+        state.role = action.payload.role;
+      })
+      .addCase(loginWithGoogle.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

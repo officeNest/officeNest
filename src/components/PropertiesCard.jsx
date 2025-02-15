@@ -15,7 +15,7 @@ export default function PropertiesCard() {
         const propertiesArray = data
           ? Object.keys(data).map((key) => ({ id: key, ...data[key] }))
           : [];
-        setProperties(propertiesArray.slice(0,4));
+        setProperties(propertiesArray);
         setLoading(false);
       })
       .catch((error) => {
