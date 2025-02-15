@@ -43,7 +43,9 @@ function Layout() {
     "/usersadmin",
     "/RequestsAdmin",
     "/dashboardadmin",
-    "/payment",
+    "/my",
+    "/formData",
+    "/request"
   ];
 
   return (
