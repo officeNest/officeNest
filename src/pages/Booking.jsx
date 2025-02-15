@@ -20,6 +20,8 @@ const Booking = () => {
   const [checkInDate, setCheckInDate] = useState("");
   const [checkOutDate, setCheckOutDate] = useState("");
   const [numberOfPeople, setNumberOfPeople] = useState(1);
+  const [isModalOpen, setIsModalOpen] = useState(false); // State for T&C modal
+  const [isTermsAccepted, setIsTermsAccepted] = useState(false); // State for T&C checkbox
 
   const handleBooking = async (e) => {
     e.preventDefault();
@@ -34,11 +36,26 @@ const Booking = () => {
       return;
     }
 
+    if (!isTermsAccepted) {
+      Swal.fire({
+        icon: "error",
+        title: "Terms and Conditions",
+        text: "You must accept the terms and conditions to proceed.",
+      });
+      return;
+    }
+
     // Navigate to the payment page with booking details as URL parameters
     navigate(
       `/payment/${propertyId}?checkInDate=${checkInDate}&checkOutDate=${checkOutDate}&numberOfPeople=${numberOfPeople}`
     );
   };
+
+  // Open T&C modal
+  const openModal = () => setIsModalOpen(true);
+
+  // Close T&C modal
+  const closeModal = () => setIsModalOpen(false);
 
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 flex items-center justify-center">
@@ -89,17 +106,125 @@ const Booking = () => {
             />
           </div>
 
+          {/* Terms and Conditions Checkbox */}
+          <div className="mt-6">
+            <label className="flex items-center gap-2 text-sm text-gray-700">
+              <input
+                type="checkbox"
+                checked={isTermsAccepted}
+                onChange={(e) => setIsTermsAccepted(e.target.checked)}
+                className="w-4 h-4"
+              />
+              <span>
+                I agree to the{" "}
+                <button
+                  type="button"
+                  onClick={openModal}
+                  className="text-[#0C2BA1] hover:underline"
+                >
+                  Terms and Conditions
+                </button>
+              </span>
+            </label>
+          </div>
+
+          {/* Confirm Booking Button */}
           <button
             type="submit"
-            disabled={loading}
-            className="mt-6 w-full bg-[#0C2BA1] text-white p-4 rounded-lg flex items-center justify-center gap-2 font-medium"
+            disabled={loading || !isTermsAccepted} // Disable if terms are not accepted
+            className="mt-6 w-full bg-[#0C2BA1] text-white p-4 rounded-lg flex items-center justify-center gap-2 font-medium disabled:bg-gray-400 disabled:cursor-not-allowed"
           >
             {loading ? "Processing..." : "Confirm Booking"}
           </button>
         </form>
       </div>
+
+      {/* Terms and Conditions Modal */}
+      <TermsAndConditionsModal isOpen={isModalOpen} onClose={closeModal} />
     </div>
   );
 };
 
 export default Booking;
+
+// Terms and Conditions Modal
+const TermsAndConditionsModal = ({ isOpen, onClose }) => {
+  if (!isOpen) return null; // Don't render the modal if it's not open
+
+  return (
+    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white p-6 rounded-lg max-w-lg w-full shadow-lg">
+        <h2 className="text-3xl font-bold text-[#0C2BA1] mb-6">
+          Terms and Conditions for Renting Office Space
+        </h2>
+
+        {/* Scrollable Content */}
+        <div className="max-h-[60vh] overflow-y-auto space-y-4 mt-6">
+          <h3 className="text-2xl font-semibold text-[#0C2BA1]">
+            1. General Terms
+          </h3>
+          <p>
+            1.1. The office space rental agreement is between you (the "Renter")
+            and [Your Company Name] ("We," "Us," or "Our").
+          </p>
+          <p>1.2. You must be at least 18 years old to make a booking.</p>
+          <p>
+            1.3. All bookings are subject to availability and confirmation by
+            us.
+          </p>
+
+          <h3 className="text-2xl font-semibold text-[#0C2BA1]">
+            2. Rental Period
+          </h3>
+          <p>
+            2.1. The rental period is defined by the check-in and check-out
+            dates selected during the booking process.
+          </p>
+          <p>
+            2.2. Any extension or modification of the rental period must be
+            requested at least 48 hours before the check-out date and is subject
+            to availability.
+          </p>
+
+          <h3 className="text-2xl font-semibold text-[#0C2BA1]">
+            3. Payments and Cancellations
+          </h3>
+          <p>
+            3.1. Full payment is required at the time of booking. Payment can be
+            made using the methods available on our platform.
+          </p>
+          <p>
+            3.2. A booking may be canceled free of charge up to 24 hours before
+            the check-in date. Cancellations made after this period may incur a
+            cancellation fee.
+          </p>
+
+          <h3 className="text-2xl font-semibold text-[#0C2BA1]">
+            4. Responsibilities of the Renter
+          </h3>
+          <p>
+            4.1. The Renter is responsible for maintaining the office space in a
+            clean and safe condition during the rental period.
+          </p>
+
+          <h3 className="text-2xl font-semibold text-[#0C2BA1]">
+            5. Liability
+          </h3>
+          <p>
+            5.1. We are not liable for any loss, injury, or damage to the
+            Renter’s property or personal belongings during the rental period.
+          </p>
+        </div>
+
+        <div className="mt-6 flex justify-between">
+          <button
+            onClick={onClose}
+            className="bg-[#0C2BA1] text-white p-3 rounded-md hover:bg-[#0A2590] transition-colors"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
