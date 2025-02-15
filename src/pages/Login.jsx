@@ -20,6 +20,17 @@ const Login = () => {
       const response = await dispatch(loginUser({ email, password })).unwrap();
 
       if (response.success) {
+        // Store user data in localStorage
+        const userData = {
+          uid: response.uid, // Ensure the response contains the user's UID
+          email: response.email,
+          role: response.role,
+        };
+        localStorage.setItem("user", JSON.stringify(userData));
+
+        // Debug: Log the stored user data
+        console.log("User data stored in localStorage:", userData);
+
         await Swal.fire({
           icon: "success",
           title: "Login Successful",
