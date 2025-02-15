@@ -18,6 +18,8 @@ import LandlordPage from "./pages/Landlord";
 import LandlordDashboard from "./pages/LandlordDashboard";
 import FormData from "./components/FormData";
 import PropertyListings from "./pages/PropertyListings";
+import MyProperties from "./components/MyProperties";
+import UserRequests from "./components/UserRequests";
 
 function App() {
   return (
@@ -47,7 +49,8 @@ function Layout() {
         <Route path="/PropertiesDetails" element={<PropertiesDetails />} />
         <Route path="/landlordDashboard" element={<LandlordDashboard />} />
         <Route path="/formData" element={<FormData />} />
-        <Route path="/request" element={<Request />} />
+        <Route path="/request" element={<UserRequests />} />
+        <Route path="/my" element={<MyProperties />} />
       </Routes>
     </>
   );
