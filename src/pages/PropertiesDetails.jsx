@@ -105,6 +105,7 @@ const PropertiesDetails = () => {
                   {property.type}
                 </h2>
                 <p className="text-gray-600 mb-4">{property.description}</p>
+                <p className="text-gray-600 mb-4">{property.description2}</p>
                 <p className="text-gray-600 mb-4">{property.capacity} ppl</p>
                 <h2 className="text-xl font-semibold text-gray-800">
                   {property.location}

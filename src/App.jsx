@@ -26,7 +26,6 @@ import DashboardAdmin from "./components/DashboardAdmin";
 import RequestsAdmin from "./components/RequestsAdmin";
 import UsersAdmin from "./components/UsersAdmin";
 
-
 function App() {
   return (
     <Router>
@@ -48,6 +47,7 @@ function Layout() {
 
   return (
     <>
+      {/* Conditionally render Navbar */}
       {!hideNavbarRoutes.includes(location.pathname) && <Navbar />}
       <Routes>
         <Route path="/" element={<Home />} />
@@ -58,7 +58,8 @@ function Layout() {
         <Route path="/map" element={<OfficeMap />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
-        <Route path="/payment" element={<Payment />} />
+        <Route path="/payment/:id" element={<Payment />} />{" "}
+        {/* This is the correct route */}
         <Route path="/be-a-landlord" element={<LandlordPage />} />
         <Route path="/admindashboard" element={<AdminDashboard />} />
         <Route path="/landlordDashboard" element={<LandlordDashboard />} />
