@@ -36,7 +36,7 @@ export default function UsersAdmin() {
 
   return (
     <div className="flex">
-      <Sidebar />
+      <Sidebar/>
       <div className="p-6 w-300">
         <h1 className="text-3xl font-semibold mb-6 text-[#0C2BA1]">
           All Users
