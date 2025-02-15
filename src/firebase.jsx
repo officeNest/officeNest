@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider } from "firebase/auth";
-import { getDatabase, ref, get, set, push, onValue } from "firebase/database"; // Import Realtime Database
+import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { getDatabase, ref, get, set, push, onValue } from "firebase/database";
 import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
@@ -15,11 +15,10 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-
 export const auth = getAuth(app);
 export const db = getDatabase(app);
 export const storage = getStorage(app);
 export const googleProvider = new GoogleAuthProvider();
 
 export { app };
-export { ref, get, set, push, onValue };
+export { ref, get, set, push, onValue, signInWithPopup };

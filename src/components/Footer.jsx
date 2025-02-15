@@ -52,15 +52,15 @@ const Footer = () => {
             <ul className="mt-3 space-y-3">
               <li className="flex items-center space-x-2">
                 <IoLocationOutline className="text-blue-500" />
-                <span>44 Danwers, NY City, USA, 70-102</span>
+                <span>Jordan, Zarqa</span>
               </li>
               <li className="flex items-center space-x-2">
                 <IoMailOutline className="text-blue-500" />
-                <span>Lamaro@Lamaroyc.Us</span>
+                <span>flexora@gmail.com</span>
               </li>
               <li className="flex items-center space-x-2">
                 <IoCallOutline className="text-blue-500" />
-                <span>91+585-656-658</span>
+                <span>+962-788844145</span>
               </li>
             </ul>
           </div>

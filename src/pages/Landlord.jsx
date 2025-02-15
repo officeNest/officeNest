@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import Nav from "../components/Nav"
 
 const LandlordPage = () => {
   const [userData, setUserData] = useState({
@@ -101,6 +102,8 @@ const LandlordPage = () => {
   }
 
   return (
+    <>
+    <Nav/>
     <div className="min-h-screen  py-12 mt-[5rem] px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto">
         {/* Header Section */}
@@ -295,6 +298,7 @@ const LandlordPage = () => {
         </form>
       </div>
     </div>
+    </>
   );
 };
 
