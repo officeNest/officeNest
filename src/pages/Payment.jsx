@@ -3,6 +3,7 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import { ref, set } from "firebase/database";
 import { db } from "/src/firebase.jsx";
 import Swal from "sweetalert2";
+import { getAuth } from "firebase/auth"; // Ensure you import getAuth for Firebase authentication
 
   const Payment = () => {
   const [searchParams] = useSearchParams();
@@ -27,6 +28,18 @@ import Swal from "sweetalert2";
   }, [propertyId]);
 
   const handlePayment = async () => {
+    const auth = getAuth();
+    const user = auth.currentUser; // Get the logged-in user
+  
+    if (!user) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "User not authenticated. Please log in.",
+      });
+      return;
+    }
+  
     if (!propertyId) {
       Swal.fire({
         icon: "error",
@@ -35,8 +48,9 @@ import Swal from "sweetalert2";
       });
       return;
     }
-
+  
     const paymentData = {
+      userId: user.uid, // Store the user ID
       propertyId,
       checkInDate,
       checkOutDate,
@@ -47,10 +61,9 @@ import Swal from "sweetalert2";
       cvc,
       timestamp: new Date().toISOString(),
     };
-
-    // Save payment data to the "payment" collection
-    const paymentRef = ref(db, `payments/${propertyId}`); // Use propertyId as the key
-
+  
+    const paymentRef = ref(db, `payments/${user.uid}`); // Use userId as the key for each payment
+  
     set(paymentRef, paymentData)
       .then(() => {
         Swal.fire({
