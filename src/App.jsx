@@ -43,6 +43,9 @@ function Layout() {
     "/usersadmin",
     "/RequestsAdmin",
     "/dashboardadmin",
+    "/my",
+    "/formData",
+    "/request"
   ];
 
   return (
@@ -59,7 +62,7 @@ function Layout() {
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/payment/:id" element={<Payment />} />{" "}
-        {/* This is the correct route */}
+        {/* Updated route */}
         <Route path="/be-a-landlord" element={<LandlordPage />} />
         <Route path="/admindashboard" element={<AdminDashboard />} />
         <Route path="/landlordDashboard" element={<LandlordDashboard />} />
@@ -71,6 +74,8 @@ function Layout() {
         <Route path="/usersadmin" element={<UsersAdmin />} />
         <Route path="/request" element={<UserRequests />} />
         <Route path="/my" element={<MyProperties />} />
+        <Route path="/my" element={<MyProperties />} />
+
       </Routes>
     </>
   );
