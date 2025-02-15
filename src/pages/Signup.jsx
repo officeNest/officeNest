@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
 import Swal from "sweetalert2";
-import { signupUser } from "../features/authSlice";
+import { signupUser, loginWithGoogle } from "../features/authSlice";
 import { Eye, EyeOff } from "lucide-react";
 
 const Signup = () => {
@@ -42,6 +42,30 @@ const Signup = () => {
       }
     } catch (error) {
       console.error("Signup error:", error);
+      await Swal.fire({
+        icon: "error",
+        title: "Signup Failed",
+        text: error.message || "Something went wrong!",
+      });
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      const response = await dispatch(loginWithGoogle()).unwrap();
+
+      if (response) {
+        await Swal.fire({
+          icon: "success",
+          title: "Signup Successful",
+          text: "Your account has been created successfully!",
+          timer: 2000,
+          showConfirmButton: false,
+        });
+
+        navigate("/");
+      }
+    } catch (error) {
       await Swal.fire({
         icon: "error",
         title: "Signup Failed",
@@ -170,6 +194,19 @@ const Signup = () => {
                 className="w-full bg-[#0C2BA1] text-white py-3 rounded-md hover:bg-[#0A247A] transition-colors duration-200 font-medium"
               >
                 Create Account
+              </button>
+
+              <button
+                type="button"
+                onClick={handleGoogleLogin}
+                className="w-full bg-red-600 text-white py-3 rounded-md hover:bg-red-700 transition-colors duration-200 font-medium flex items-center justify-center"
+              >
+                <img
+                  src="https://img.icons8.com/color/24/000000/google-logo.png"
+                  alt="Google Logo"
+                  className="mr-2"
+                />
+                Sign up with Google
               </button>
 
               <div className="text-center text-sm text-gray-600">
