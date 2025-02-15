@@ -319,8 +319,8 @@ const UserProfile = () => {
                     {rental.propertyName}
                   </p>
                   <p className="text-gray-700">
-                    <span className="font-semibold">Price:</span> $
-                    {rental.propertyPrice}
+                    <span className="font-semibold">Price:</span> 
+                    {rental.propertyPrice} JD
                   </p>
                   <p className="text-gray-700">
                     <span className="font-semibold">Check-In Date:</span>{" "}

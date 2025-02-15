@@ -167,8 +167,6 @@ const PropertiesDetails = () => {
         {/* FAQ Section */}
         <FAQ />
       </div>
-       {/* FAQ Section */}
-       <FAQ />
        <Reviews officeId={propertyId}/>
     <Footer/>
     </>
