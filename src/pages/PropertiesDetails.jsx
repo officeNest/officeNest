@@ -3,8 +3,10 @@ import { useParams, useNavigate } from "react-router-dom";
 import { ref, get } from "firebase/database";
 import { db } from "../firebase";
 import { AiOutlineArrowLeft } from "react-icons/ai";
-import FAQ from "../components/FAQ";
-import Footer from "../components/Footer";
+import { useLocation } from "react-router-dom";
+import FAQ from "../components/FAQ"; 
+import Footer from "../components/Footer"
+import Reviews from "../components/Reviews";
 
 const PropertiesDetails = () => {
   const { propertyId } = useParams();
@@ -165,7 +167,10 @@ const PropertiesDetails = () => {
         {/* FAQ Section */}
         <FAQ />
       </div>
-      <Footer />
+       {/* FAQ Section */}
+       <FAQ />
+       <Reviews officeId={propertyId}/>
+    <Footer/>
     </>
   );
 };
