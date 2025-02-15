@@ -2,12 +2,11 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { db } from "../firebase";
 import { ref, get } from "firebase/database";
 
-
 export const fetchProperties = createAsyncThunk(
   "properties/fetchProperties",
   async (_, { getState, rejectWithValue }) => {
     const { user } = getState().auth;
-    
+
     if (!user || !user.uid) {
       return rejectWithValue("User not logged in");
     }
