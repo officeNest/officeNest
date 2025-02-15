@@ -1,27 +1,77 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate,Link } from "react-router-dom";
+import axios from "axios";
 
 function HomeHero() {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [locations, setLocations] = useState([]);
+  const [filteredLocations, setFilteredLocations] = useState([]);
+  const navigate = useNavigate();
+
+  // Fetch office locations from Firebase (Realtime Database)
+  useEffect(() => {
+    const fetchLocations = async () => {
+      try {
+        const response = await axios.get(
+          "https://officenest-380c1-default-rtdb.firebaseio.com/properties.json"
+        ); // Replace with your Firebase URL
+        const data = response.data;
+        if (data) {
+          const locationList = Object.values(data).map((office) => office.location);
+          setLocations(locationList);
+        }
+      } catch (error) {
+        console.error("Error fetching locations:", error);
+      }
+    };
+
+    fetchLocations();
+  }, []);
+
+  // Handle search input change
+  const handleSearch = (e) => {
+    const value = e.target.value.toLowerCase();
+    setSearchTerm(value);
+
+    if (value.trim() === "") {
+      setFilteredLocations([]);
+    } else {
+      const filtered = locations.filter((location) =>
+        location.toLowerCase().includes(value)
+      );
+      setFilteredLocations(filtered);
+    }
+  };
+
+  // Handle selecting a location
+  const handleSelectLocation = (location) => {
+    setSearchTerm(location);
+    setFilteredLocations([]);
+    navigate(`/offices/${location}`); // Navigate to office details page
+  };
+
   return (
     <>
-      <div className="relative w-full h-screen flex items-center text-white z-index-0">
+      <div className="relative w-full h-screen flex items-center text-white">
         {/* Background Image */}
-        <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{
-            backgroundImage:
-              "url('https://mir-s3-cdn-cf.behance.net/project_modules/fs/7a0a0f164393867.63f613cfed3da.jpg')",
-          }}
-        ></div>
+        <video
+          className="absolute inset-0 w-full h-full object-cover"
+          autoPlay
+          loop
+          muted
+          playsInline
+        >
+          <source src="https://videos.pexels.com/video-files/8347237/8347237-uhd_2560_1440_25fps.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
 
-        {/* Red Diagonal Overlay */}
+        {/* Overlay */}
         <div className="absolute inset-0 bg-[#051A6C]/90 clip-diagonal"></div>
 
-        {/* Content (Aligned Left) */}
+        {/* Content */}
         <div className="relative z-10 max-w-4xl px-10 lg:px-20">
           <h1 className="text-3xl md:text-4xl max-w-[500px] mb-[40px] font-bold">
-            <span className="text-white">
-              A Smarter Way to Work, A Faster Way to Rent!
-            </span>
+          A Flexible Way to Work, A Faster Way to Rent!
           </h1>
           <p className="mt-4 text-md max-w-[500px] text-white">
             Explore modern office rentals tailored for freelancers, startups,
@@ -30,21 +80,15 @@ function HomeHero() {
           </p>
 
           {/* Search Bar */}
-          <div className="mt-6 flex items-center max-w-[800px]">
+          <div className="mt-6 flex items-center max-w-[800px] relative">
             <div className="relative w-[300px]" id="input">
               <input
-                value=""
-                placeholder="Search..."
-                className="block w-full text-sm h-[50px] px-4 text-slate-900 bg-white rounded-[8px] border border-slate-200 appearance-none focus:border-transparent focus:outline focus:outline-2 focus:outline-primary focus:ring-0 hover:border-brand-500-secondary- peer invalid:border-error-500 invalid:focus:border-error-500 overflow-ellipsis overflow-hidden text-nowrap pr-[48px]"
-                id="floating_outlined"
+                value={searchTerm}
+                onChange={handleSearch}
+                placeholder="Search by location..."
+                className="block w-full text-sm h-[50px] px-4 text-slate-900 bg-white rounded-[8px] border border-slate-200 focus:outline-none"
                 type="text"
               />
-              <label
-                className="peer-placeholder-shown:-z-10 peer-focus:z-10 absolute text-[14px] leading-[150%] text-black peer-focus:text-black peer-invalid:text-error-500 focus:invalid:text-error-500 duration-300 transform -translate-y-[1.2rem] scale-75 top-2 z-10 origin-[0] bg-white data-[disabled]:bg-gray-50-background- px-2 peer-focus:px-2 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-[1.2rem] rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1"
-                htmlFor="floating_outlined"
-              >
-                Search...
-              </label>
               <div className="absolute top-3 right-3">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -64,11 +108,27 @@ function HomeHero() {
                   ></rect>
                 </svg>
               </div>
+              
+              {/* Search Results Dropdown */}
+              {filteredLocations.length > 0 && (
+                <ul className="absolute z-20 w-full bg-white border border-gray-200 rounded-md mt-1 max-h-40 overflow-y-auto">
+                  {filteredLocations.map((location, index) => (
+                    <li
+                      key={index}
+                      className="p-2 hover:bg-gray-100 cursor-pointer text-black"
+                      onClick={() => handleSelectLocation(location)}
+                    >
+                      {location}
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
           </div>
 
           {/* CTA Button */}
           <button className="overflow-hidden mt-[30px] relative w-52 p-2 h-10 bg-black text-white border-none rounded-md text-md font-bold cursor-pointer relative z-10 group">
+            <Link to="/offices">
             Book Your Space Now
             <span className="absolute w-36 h-32 -top-8 -left-2 bg-white rotate-8 transform scale-x-0 group-hover:scale-x-200 transition-transform group-hover:duration-500 duration-1000 origin-left"></span>
             <span className="absolute w-36 h-32 -top-8 -left-2 bg-[#0C2BA1] rotate-8 transform scale-x-0 group-hover:scale-x-200 transition-transform group-hover:duration-700 duration-700 origin-left"></span>
@@ -76,6 +136,7 @@ function HomeHero() {
             <span className="group-hover:opacity-100 group-hover:duration-1000 duration-100 opacity-0 absolute top-2.5 left-18 z-10">
               Explore!
             </span>
+            </Link>
           </button>
         </div>
 

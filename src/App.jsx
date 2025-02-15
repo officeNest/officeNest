@@ -1,4 +1,3 @@
-
 import {
   BrowserRouter as Router,
   Routes,
@@ -16,11 +15,11 @@ import Payment from "./pages/Payment";
 import AdminDashboard from "./pages/AdminDashboard";
 import UserProfile from "./pages/UserProfile";
 import Booking from "./pages/Booking";
-
 import LandlordPage from "./pages/Landlord";
 import LandlordDashboard from "./pages/LandlordDashboard";
 import FormData from "./components/FormData";
 import PropertyListings from "./pages/PropertyListings";
+import OfficeMap from "./components/OfficeMap";
 
 function App() {
   return (
@@ -42,6 +41,8 @@ function Layout() {
         <Route path="/signup" element={<SignUp />} />
         <Route path="/login" element={<Login />} />
         <Route path="/offices" element={<PropertyListings />} />
+        <Route path="/properties/:propertyId" element={<PropertiesDetails />} />
+        <Route path="/map" element={<OfficeMap />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/payment" element={<Payment />} />
@@ -49,8 +50,7 @@ function Layout() {
         <Route path="/admindashboard" element={<AdminDashboard />} />
         <Route path="/landlordDashboard" element={<LandlordDashboard />} />
         <Route path="/formData" element={<FormData />} />
-        <Route path="/request" element={<Request />} />
-        <Route path="/booking" element={<Booking />} />
+        <Route path="/booking/:propertyId" element={<Booking />} />
         <Route path="/UserProfile" element={<UserProfile />} />
       </Routes>
     </>
