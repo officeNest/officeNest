@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { db } from "../firebase"; // Adjust the import path to your Firebase config
-import { ref, get, set } from "firebase/database";
-
+import { db } from "../firebase"; // Make sure the path is correct
+import { ref, get, update } from "firebase/database"; // Use update instead of set
 
 // Fetch all users with role = "owner" and status = "pending"
 export const fetchPendingOwnerRequests = createAsyncThunk(
@@ -13,9 +12,9 @@ export const fetchPendingOwnerRequests = createAsyncThunk(
 
       if (snapshot.exists()) {
         const users = snapshot.val();
-        const pendingOwners = Object.values(users).filter(
-          (user) => user.role === "owner" && user.status === "pending"
-        );
+        const pendingOwners = Object.entries(users)
+          .filter(([key, user]) => user.role === "owner" && user.status === "pending")
+          .map(([key, user]) => ({ uid: key, ...user })); // Include UID in the object
         return pendingOwners;
       } else {
         return rejectWithValue("No users found");
@@ -26,13 +25,14 @@ export const fetchPendingOwnerRequests = createAsyncThunk(
   }
 );
 
-// Update the status of a user request
+// ✅ Correctly Update User Status in Firebase
 export const updateRequestStatus = createAsyncThunk(
   "requests/updateRequestStatus",
   async ({ requestId, status }, { rejectWithValue }) => {
     try {
       const userRef = ref(db, `users/${requestId}`);
-      await set(userRef, { status }, { merge: true }); // Update only the status field
+      await update(userRef, { status }); // ✅ Use update() instead of set()
+
       return { requestId, status };
     } catch (error) {
       return rejectWithValue(error.message);
@@ -50,7 +50,6 @@ const requestsSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      // Fetch pending owner requests
       .addCase(fetchPendingOwnerRequests.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -63,7 +62,6 @@ const requestsSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-      // Update request status
       .addCase(updateRequestStatus.fulfilled, (state, action) => {
         const { requestId, status } = action.payload;
         const request = state.requests.find((req) => req.uid === requestId);
