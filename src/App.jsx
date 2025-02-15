@@ -19,10 +19,13 @@ import LandlordPage from "./pages/Landlord";
 import LandlordDashboard from "./pages/LandlordDashboard";
 import FormData from "./components/FormData";
 import PropertyListings from "./pages/PropertyListings";
+import MyProperties from "./components/MyProperties";
+import UserRequests from "./components/UserRequests";
 import OfficeMap from "./components/OfficeMap";
 import DashboardAdmin from "./components/DashboardAdmin";
 import RequestsAdmin from "./components/RequestsAdmin";
 import UsersAdmin from "./components/UsersAdmin";
+
 
 function App() {
   return (
@@ -65,6 +68,8 @@ function Layout() {
         <Route path="/dashboardadmin" element={<DashboardAdmin />} />
         <Route path="/RequestsAdmin" element={<RequestsAdmin />} />
         <Route path="/usersadmin" element={<UsersAdmin />} />
+        <Route path="/request" element={<UserRequests />} />
+        <Route path="/my" element={<MyProperties />} />
       </Routes>
     </>
   );

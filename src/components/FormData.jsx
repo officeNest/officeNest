@@ -29,49 +29,59 @@ export default function FormData() {
     }
   };
   const handleSubmit = async (e) => {
-    e.preventDefault();
-  
-    const user = JSON.parse(localStorage.getItem("user")); // جلب بيانات المستخدم من Redux أو localStorage
-  
-    if (!user || !user.uid) {
-      alert("You must be logged in to add a property!");
-      return;
-    }
-  
-    const firebaseUrl = `https://officenest-380c1-default-rtdb.firebaseio.com/properties/${user.uid}.json`;
-  
-    const propertyData = {
-      ...formData,
-      images: formData.images.map((file) => file.name),
-      video: formData.video ? formData.video.name : null,
-      owner: {
-        uid: user.uid,
-        email: user.email,
-        name: user.name || "Unknown Owner",
-      },
+      e.preventDefault();
+    
+      const user = JSON.parse(localStorage.getItem("user")); // جلب بيانات المستخدم
+    
+      if (!user || !user.uid) {
+        alert("You must be logged in to add a property!");
+        return;
+      }
+    
+      const firebaseUrl = `https://officenest-380c1-default-rtdb.firebaseio.com/properties/${user.uid}.json`;
+    
+      const propertyData = {
+        ...formData,
+        images: formData.images.map((file) => file.name),
+        video: formData.video ? formData.video.name : null,
+        owner: {
+          uid: user.uid,
+          email: user.email,
+          name: user.name || "Unknown Owner",
+        },
+      };
+    
+      try {
+        // جلب العقارات الموجودة مسبقًا
+        const { data: existingData } = await axios.get(firebaseUrl);
+    
+        // تحديث العقارات كمصفوفة
+        const updatedProperties = existingData ? [...existingData, propertyData] : [propertyData];
+    
+        // تخزين العقارات الجديدة كمصفوفة
+        await axios.put(firebaseUrl, updatedProperties);
+    
+        alert("Property Added Successfully!");
+        setFormData({
+          name: "",
+          type: "",
+          location: "",
+          size: "",
+          capacity: "",
+          status: "Available",
+          price: "",
+          images: [],
+          video: null,
+          approvment: false,
+          description: "",
+        });
+      } catch (error) {
+        console.error("Error adding property:", error);
+        alert("Failed to add property.");
+      }
     };
+    
   
-    try {
-      await axios.post(firebaseUrl, propertyData);
-      alert("Property Added Successfully!");
-      setFormData({
-        name: "",
-        type: "",
-        location: "",
-        size: "",
-        capacity: "",
-        status: "Available",
-        price: "",
-        images: [],
-        video: null,
-        approvment: false,
-        description: "",
-      });
-    } catch (error) {
-      console.error("Error adding property:", error);
-      alert("Failed to add property.");
-    }
-  };
   
 
   return (

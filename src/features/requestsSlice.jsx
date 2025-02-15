@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { db } from "../firebase"; // Adjust the import path to your Firebase config
 import { ref, get, set } from "firebase/database";
 
+
 // Fetch all users with role = "owner" and status = "pending"
 export const fetchPendingOwnerRequests = createAsyncThunk(
   "requests/fetchPendingOwnerRequests",
