@@ -2,9 +2,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "./features/authSlice";
 import userReducer from "./features/userSlice";
-import bookingReducer from "./features/bookingSlice";
 import officeReducer from "./features/PropertyListingsSlice";
-import userReducer from "./features/userSlice";
 import bookingReducer from "./features/bookingSlice";
 import requestsReducer from "./features/requestsSlice";
 import usersReducer from "./features/usersslice";
