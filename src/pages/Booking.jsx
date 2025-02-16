@@ -45,10 +45,32 @@ const Booking = () => {
       return;
     }
 
-    // Navigate to the payment page with booking details as URL parameters
-    navigate(
-      `/payment/${propertyId}?checkInDate=${checkInDate}&checkOutDate=${checkOutDate}&numberOfPeople=${numberOfPeople}`
-    );
+    try {
+      const bookingData = {
+        userId,
+        propertyId,
+        checkInDate,
+        checkOutDate,
+        numberOfPeople,
+      };
+
+      console.log("Dispatching booking data:", bookingData);
+
+      // Dispatch the createBooking thunk
+      await dispatch(createBooking(bookingData)).unwrap();
+
+      // Navigate to the payment page after successful booking creation
+      navigate(
+        `/payment/${propertyId}?checkInDate=${checkInDate}&checkOutDate=${checkOutDate}&numberOfPeople=${numberOfPeople}`
+      );
+    } catch (error) {
+      console.error("Booking failed:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Booking Failed",
+        text: error.message || "An error occurred while creating the booking.",
+      });
+    }
   };
 
   // Open T&C modal
