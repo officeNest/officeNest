@@ -15,10 +15,17 @@ function HomeHero() {
       try {
         const response = await axios.get(
           "https://officenest-380c1-default-rtdb.firebaseio.com/properties.json"
-        ); // Replace with your Firebase URL
+        );
         const data = response.data;
+  
         if (data) {
-          const listingsArray = Object.values(data);
+          const listingsArray = Object.entries(data).map(([key, value]) => ({
+            id: key, // Firebase key as ID
+            ...value,
+          }));
+  
+          console.log("Fetched Listings:", listingsArray); // Debugging log
+  
           setListings(listingsArray);
           setLocations(listingsArray.map((office) => office.location));
         }
@@ -26,9 +33,11 @@ function HomeHero() {
         console.error("Error fetching locations:", error);
       }
     };
-
+  
     fetchLocations();
   }, []);
+  
+  
 
   // Handle search input change
   const handleSearch = (e) => {
@@ -49,14 +58,20 @@ function HomeHero() {
   const handleSelectLocation = (location) => {
     setSearchTerm(location);
     setFilteredLocations([]);
-
-    const selectedListing = listings.find((office) => office.location === location);
+  
+    console.log("Selected Location:", location); // Debugging log
+    console.log("All Listings:", listings); // Log all listings
+  
+    const selectedListing = listings.find((office) => office.location.toLowerCase() === location.toLowerCase());
+  
     if (selectedListing) {
-      navigate("/PropertiesDetails", { state: { listing: selectedListing } });
+      console.log("Navigating to:", `/properties/${selectedListing.id}`); // Debugging log
+      navigate(`/properties/${selectedListing.id}`);
     } else {
-      console.error("Office data not found for selected location");
+      console.error("Office data not found for selected location:", location);
     }
   };
+  
 
   return (
     <>

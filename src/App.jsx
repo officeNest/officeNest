@@ -73,7 +73,7 @@ function Layout() {
         <Route path="/usersadmin" element={<UsersAdmin />} />
         <Route path="/request" element={<UserRequests />} />
         <Route path="/my" element={<MyProperties />} />
-        <Route path="/my" element={<MyProperties />} />
+       
 
       </Routes>
     </>

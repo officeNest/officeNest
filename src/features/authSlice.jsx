@@ -1,36 +1,33 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { auth, db, googleProvider } from "../firebase";
-import { ref, set, get } from "firebase/database";
+import { ref, set, get, onValue } from "firebase/database";
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signInWithPopup,
 } from "firebase/auth";
 
-const extractUserData = (user) => {
-  return {
-    uid: user.uid,
-    email: user.email,
-    emailVerified: user.emailVerified,
-    displayName: user.displayName,
-    photoURL: user.photoURL,
-  };
-};
+// Function to extract user data from Firebase Auth
+const extractUserData = (user) => ({
+  uid: user.uid,
+  email: user.email,
+  emailVerified: user.emailVerified,
+  displayName: user.displayName,
+  photoURL: user.photoURL,
+});
 
+// Load user from localStorage if available
 const loadUserFromStorage = () => {
   const storedUser = localStorage.getItem("user");
   return storedUser ? JSON.parse(storedUser) : null;
 };
 
+// Async thunk for logging in a user
 export const loginUser = createAsyncThunk(
   "auth/login",
   async ({ email, password }, { rejectWithValue }) => {
     try {
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const userData = extractUserData(userCredential.user);
 
       const userRef = ref(db, `users/${userCredential.user.uid}`);
@@ -51,15 +48,12 @@ export const loginUser = createAsyncThunk(
   }
 );
 
+// Async thunk for signing up a new user
 export const signupUser = createAsyncThunk(
   "auth/signup",
   async ({ email, password, name }, { rejectWithValue }) => {
     try {
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
       const userData = extractUserData(user);
 
@@ -82,6 +76,7 @@ export const signupUser = createAsyncThunk(
   }
 );
 
+// Async thunk for logging in with Google
 export const loginWithGoogle = createAsyncThunk(
   "auth/loginWithGoogle",
   async (_, { rejectWithValue }) => {
@@ -118,11 +113,37 @@ export const loginWithGoogle = createAsyncThunk(
   }
 );
 
+// Async thunk to listen for role changes in Firebase
+export const listenForRoleChanges = createAsyncThunk(
+  "auth/listenForRoleChanges",
+  async (_, { getState, dispatch }) => {
+    const user = getState().auth.user;
+    if (!user) return;
+
+    const userRef = ref(db, `users/${user.uid}`);
+
+    onValue(userRef, (snapshot) => {
+      if (snapshot.exists()) {
+        const updatedUserData = snapshot.val();
+
+        // Update Redux store and localStorage
+        dispatch(updateUserRole(updatedUserData.role));
+        localStorage.setItem(
+          "user",
+          JSON.stringify({ ...user, role: updatedUserData.role })
+        );
+      }
+    });
+  }
+);
+
+// Function to log out a user
 export const logoutUser = () => (dispatch) => {
   localStorage.removeItem("user");
   dispatch(logout());
 };
 
+// Create the auth slice
 const authSlice = createSlice({
   name: "auth",
   initialState: {
@@ -136,6 +157,12 @@ const authSlice = createSlice({
       state.user = null;
       state.role = null;
       localStorage.removeItem("user");
+    },
+    updateUserRole: (state, action) => {
+      if (state.user) {
+        state.user.role = action.payload;
+        state.role = action.payload;
+      }
     },
   },
   extraReducers: (builder) => {
@@ -179,5 +206,6 @@ const authSlice = createSlice({
   },
 });
 
-export const { logout } = authSlice.actions;
+// Export actions and reducer
+export const { logout, updateUserRole } = authSlice.actions;
 export default authSlice.reducer;
