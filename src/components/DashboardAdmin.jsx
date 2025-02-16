@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchOffices } from "../features/officesSlice";
+import { fetchOffices, softDeleteOffice } from "../features/officesSlice"; // Import the softDeleteOffice action
 import Sidebar from "./Sidebar";
 
 const DashboardAdmin = () => {
@@ -22,6 +22,12 @@ const DashboardAdmin = () => {
       setFilteredOffices(offices.filter((office) => office.type === filter));
     }
   }, [offices, filter]);
+
+  // Handle soft delete action
+  const handleDelete = (officeId) => {
+    // Dispatch the soft delete action
+    dispatch(softDeleteOffice(officeId));
+  };
 
   // Loading state
   if (loading)
@@ -131,6 +137,13 @@ const DashboardAdmin = () => {
                     </p>
                   </div>
                 </div>
+                {/* Soft delete button */}
+                <button
+                  onClick={() => handleDelete(office.id)}
+                  className="mt-4 px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
+                >
+                  Delete
+                </button>
               </div>
             </div>
           ))}

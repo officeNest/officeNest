@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import Nav from "./Nav"
+import Nav from "./Nav";
 
 export default function MyProperties() {
   const [properties, setProperties] = useState([]); // تأكد أن الحالة تبدأ كمصفوفة
@@ -34,9 +34,8 @@ export default function MyProperties() {
   }, []);
 
   return (
-    <>
-    <Nav />
     <div className="min-h-screen bg-gray-50 p-6">
+      <Nav/>
       <h1 className="text-3xl font-semibold text-center text-indigo-700 underline mb-6">
         My Properties
       </h1>
@@ -71,6 +70,5 @@ export default function MyProperties() {
         </div>
       )}
     </div>
-    </>
   );
 }
