@@ -21,9 +21,11 @@ const UserProfile = () => {
     profileImage: user.profileImage || "", // Profile image URL
   });
 
+  const [rentalHistory, setRentalHistory] = useState([]); // State to store rental history
+
   const userId = auth.currentUser ? auth.currentUser.uid : null;
 
-  // Fetch user data from Firebase
+  // Fetch user data and rental history from Firebase
   useEffect(() => {
     if (!userId) {
       console.error("User not authenticated!");
@@ -33,10 +35,11 @@ const UserProfile = () => {
     const fetchUserData = async () => {
       dispatch(setLoading(true));
       try {
+        // Fetch user profile data
         const userRef = ref(db, `users/${userId}`);
-        const snapshot = await get(userRef);
-        if (snapshot.exists()) {
-          const userData = snapshot.val();
+        const userSnapshot = await get(userRef);
+        if (userSnapshot.exists()) {
+          const userData = userSnapshot.val();
           console.log("Fetched user data:", userData);
 
           // Dispatch the setUserProfile action to update Redux state
@@ -64,9 +67,45 @@ const UserProfile = () => {
         } else {
           console.log("No user data found for ID:", userId);
         }
+
+        // Fetch rental history from the "payments" collection
+        const paymentsRef = ref(db, "payments");
+        const paymentsSnapshot = await get(paymentsRef);
+        if (paymentsSnapshot.exists()) {
+          const paymentsData = paymentsSnapshot.val();
+          const userPayments = Object.values(paymentsData).filter(
+            (payment) => payment.userId === userId
+          );
+
+          // Fetch property details for each payment
+          const rentalHistoryWithPropertyDetails = await Promise.all(
+            userPayments.map(async (payment) => {
+              const propertyRef = ref(db, `properties/${payment.propertyId}`);
+              const propertySnapshot = await get(propertyRef);
+              if (propertySnapshot.exists()) {
+                const propertyData = propertySnapshot.val();
+                return {
+                  ...payment,
+                  propertyName: propertyData.name,
+                  propertyPrice: propertyData.price,
+                };
+              } else {
+                return {
+                  ...payment,
+                  propertyName: "Unknown Property",
+                  propertyPrice: "N/A",
+                };
+              }
+            })
+          );
+
+          setRentalHistory(rentalHistoryWithPropertyDetails); // Set rental history with property details
+        } else {
+          console.log("No payments found.");
+        }
       } catch (error) {
-        dispatch(setError("Error fetching user data"));
-        console.error("Error fetching user data:", error);
+        dispatch(setError("Error fetching data"));
+        console.error("Error fetching data:", error);
       } finally {
         dispatch(setLoading(false));
       }
@@ -261,6 +300,42 @@ const UserProfile = () => {
               />
             </div>
           </div>
+        </div>
+
+        {/* Rental History */}
+        <div className="mb-8 space-y-6">
+          <h2 className="text-2xl font-semibold mb-6 text-[#0C2BA1] border-b pb-2">
+            Rental History
+          </h2>
+          {rentalHistory.length > 0 ? (
+            <div className="space-y-4">
+              {rentalHistory.map((rental, index) => (
+                <div
+                  key={index}
+                  className="p-4 border rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300"
+                >
+                  <p className="text-gray-700">
+                    <span className="font-semibold">Property Name:</span>{" "}
+                    {rental.propertyName}
+                  </p>
+                  <p className="text-gray-700">
+                    <span className="font-semibold">Price:</span> 
+                    {rental.propertyPrice} JD
+                  </p>
+                  <p className="text-gray-700">
+                    <span className="font-semibold">Check-In Date:</span>{" "}
+                    {rental.checkInDate}
+                  </p>
+                  <p className="text-gray-700">
+                    <span className="font-semibold">Check-Out Date:</span>{" "}
+                    {rental.checkOutDate}
+                  </p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-gray-600">No rental history found.</p>
+          )}
         </div>
 
         {/* Save Button */}

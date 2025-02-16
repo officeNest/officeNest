@@ -101,12 +101,21 @@ function Navbar() {
                       >
                         Profile
                       </Link>
+                      {user.role !== "owner" ? (
                       <Link
                         to="/be-a-landlord"
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150"
                       >
                         Be a Landlord
                       </Link>
+                      ):(
+                        <Link
+                        to="/my"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150"
+                      >
+                        Your DashBoard
+                      </Link>
+                      )}
                       <button
                         onClick={handleLogout}
                         className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-50 transition-colors duration-150"
