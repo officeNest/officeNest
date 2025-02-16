@@ -3,17 +3,15 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import { ref, set } from "firebase/database";
 import { db } from "/src/firebase.jsx";
 import Swal from "sweetalert2";
-import { getAuth } from "firebase/auth"; // Ensure you import getAuth for Firebase authentication
+import { getAuth } from "firebase/auth";
 
-const Payment = () => {
+  const Payment = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  // Extract propertyId from URL manually
   const pathParts = window.location.pathname.split("/");
-  const propertyId = pathParts[pathParts.length - 1]; // Get last part of path
+  const propertyId = pathParts[pathParts.length - 1];
 
-  // Extract booking details from URL query parameters
   const checkInDate = searchParams.get("checkInDate") || "N/A";
   const checkOutDate = searchParams.get("checkOutDate") || "N/A";
   const numberOfPeople = searchParams.get("numberOfPeople") || "1";
@@ -27,10 +25,56 @@ const Payment = () => {
     console.log("Extracted propertyId:", propertyId);
   }, [propertyId]);
 
+
+  //////////////////////////////////////////////////
+
+
+  // Function to validate card number using Luhn algorithm
+  const validateCardNumber = (cardNumber) => {
+    const cleanedCardNumber = cardNumber.replace(/\D/g, "");
+    let sum = 0;
+    for (let i = 0; i < cleanedCardNumber.length; i++) {
+      let digit = parseInt(cleanedCardNumber[i]);
+      if ((cleanedCardNumber.length - i) % 2 === 0) {
+        digit *= 2;
+        if (digit > 9) digit -= 9;
+      }
+      sum += digit;
+    }
+    return sum % 10 === 0;
+  };
+
+  // Function to validate expiry date (with max 12 months and not in the past)
+  const validateExpiryDate = (expiryDate) => {
+    const [month, year] = expiryDate.split("/");
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear() % 100;
+    const currentMonth = currentDate.getMonth() + 1;
+
+    // Check if the month is between 01 and 12
+    if (month < 1 || month > 12) {
+      return false;
+    }
+
+    // Check if the year is in the future or the same year with a valid month
+    if (year < currentYear || (year == currentYear && month < currentMonth)) {
+      return false;
+    }
+    return true;
+  };
+
+  // Function to validate CVC (must be 3 digits and not "000")
+  const validateCVC = (cvc) => {
+    return cvc.length === 3 && /^\d+$/.test(cvc) && cvc !== "000";
+  };
+
+
+  /////////////////////////////////////////////////////////////////
+
   const handlePayment = async () => {
     const auth = getAuth();
-    const user = auth.currentUser; // Get the logged-in user
-  
+    const user = auth.currentUser;
+
     if (!user) {
       Swal.fire({
         icon: "error",
@@ -39,7 +83,7 @@ const Payment = () => {
       });
       return;
     }
-  
+
     if (!propertyId) {
       Swal.fire({
         icon: "error",
@@ -48,9 +92,39 @@ const Payment = () => {
       });
       return;
     }
-  
+
+    // Validate card number
+    if (!validateCardNumber(cardNumber)) {
+      Swal.fire({
+        icon: "error",
+        title: "Invalid Card Number",
+        text: "Please enter a valid card number.",
+      });
+      return;
+    }
+
+    // Validate expiry date
+    if (!validateExpiryDate(expiryDate)) {
+      Swal.fire({
+        icon: "error",
+        title: "Invalid Expiry Date",
+        text: "Please enter a valid expiry date.",
+      });
+      return;
+    }
+
+    // Validate CVC
+    if (!validateCVC(cvc)) {
+      Swal.fire({
+        icon: "error",
+        title: "Invalid CVV",
+        text: "Please enter a valid CVC (cannot be 000).",
+      });
+      return;
+    }
+
     const paymentData = {
-      userId: user.uid, // Store the user ID
+      userId: user.uid,
       propertyId,
       checkInDate,
       checkOutDate,
@@ -61,9 +135,9 @@ const Payment = () => {
       cvc,
       timestamp: new Date().toISOString(),
     };
-  
-    const paymentRef = ref(db, `payments/${user.uid}`); // Use userId as the key for each payment
-  
+
+    const paymentRef = ref(db, `payments/${user.uid}`);
+
     set(paymentRef, paymentData)
       .then(() => {
         Swal.fire({
@@ -213,52 +287,48 @@ const Payment = () => {
                       value={expiryDate}
                       onChange={(e) => {
                         const value = e.target.value.replace(/\D/g, ""); // Remove non-digits
-                        const formattedValue = value
-                          .replace(/^(\d{2})(\d{0,2})/, "$1/$2") // Add slash after 2 digits
-                          .substring(0, 5); // Limit to MM/YY format
-                        setExpiryDate(formattedValue);
+                        let formattedValue = value.replace(
+                          /^(\d{2})(\d{0,2})/,
+                          "$1/$2"
+                        ); // Add slash after 2 digits
+
+                        // Limit the month part to 12
+                        const month = formattedValue.substring(0, 2);
+                        if (parseInt(month) > 12) {
+                          formattedValue =
+                            "12/" + formattedValue.substring(3, 5); // Set the month to 12 if greater
+                        }
+
+                        setExpiryDate(formattedValue.substring(0, 5)); // Limit to MM/YY format
                       }}
                       maxLength={5}
                     />
                   </div>
+
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Security Code (CVC)
+                      CVV
                     </label>
                     <input
                       type="text"
                       className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#0C2BA1] focus:border-[#0C2BA1]"
-                      placeholder="123"
+                      placeholder="CVV"
                       value={cvc}
-                      onChange={(e) => {
-                        const value = e.target.value.replace(/\D/g, ""); // Remove non-digits
-                        setCvc(value.substring(0, 3)); // Limit to 3 digits
-                      }}
+                      onChange={(e) => setCvc(e.target.value)}
                       maxLength={3}
                     />
                   </div>
                 </div>
               </div>
 
-              {/* Submit Button */}
-              <button
-                onClick={handlePayment}
-                className="w-full bg-[#0C2BA1] text-white py-4 px-6 rounded-lg font-semibold hover:bg-[#0A2490] transition duration-300 shadow-lg flex items-center justify-center gap-2"
-              >
-                <span>Complete Payment</span>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
+              <div className="mt-6">
+                <button
+                  onClick={handlePayment}
+                  className="w-full py-3 px-6 bg-[#0C2BA1] text-white font-medium text-lg rounded-lg hover:bg-[#2a43b1] transition-all duration-200"
                 >
-                  <path
-                    fillRule="evenodd"
-                    d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </button>
+                  Pay Now
+                </button>
+              </div>
             </div>
           </div>
         </div>
