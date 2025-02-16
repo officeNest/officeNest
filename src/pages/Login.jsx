@@ -14,71 +14,83 @@ const Login = () => {
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    try {
-      const response = await dispatch(loginUser({ email, password })).unwrap();
+  try {
+    const response = await dispatch(loginUser({ email, password })).unwrap();
 
-      if (response.success) {
-        const userData = {
-          uid: response.uid,
-          email: response.email,
-          role: response.role,
-        };
-        localStorage.setItem("user", JSON.stringify(userData));
+    if (response.success) {
+      const userData = {
+        uid: response.uid,
+        email: response.email,
+        role: response.role, // Include the role in the userData object
+      };
+      localStorage.setItem("user", JSON.stringify(userData));
 
-        console.log("User data stored in localStorage:", userData);
-
-        await Swal.fire({
-          icon: "success",
-          title: "Login Successful",
-          text: "Welcome back!",
-          timer: 2000,
-          showConfirmButton: false,
-        });
-
-        if (response.role === "owner") {
-          navigate("/landlorddashboard");
-        } else {
-          navigate("/");
-        }
+      console.log("User data stored in localStorage:", userData);
+      const user = JSON.parse(localStorage.getItem("user"));
+      if (user) {
+        console.log("User role:", user.role);
       }
-    } catch (error) {
+
       await Swal.fire({
-        icon: "error",
-        title: "Login Failed",
-        text: error.message || "Invalid credentials. Please try again!",
+        icon: "success",
+        title: "Login Successful",
+        text: "Welcome back!",
+        timer: 2000,
+        showConfirmButton: false,
       });
-    }
-  };
 
-  const handleGoogleLogin = async () => {
-    try {
-      const response = await dispatch(loginWithGoogle()).unwrap();
-
-      if (response) {
-        await Swal.fire({
-          icon: "success",
-          title: "Login Successful",
-          text: "Welcome back!",
-          timer: 2000,
-          showConfirmButton: false,
-        });
-
-        if (response.role === "owner") {
-          navigate("/landlorddashboard");
-        } else {
-          navigate("/");
-        }
+      if (response.role === "owner") {
+        navigate("/landlorddashboard");
+      } else {
+        navigate("/");
       }
-    } catch (error) {
-      await Swal.fire({
-        icon: "error",
-        title: "Login Failed",
-        text: error.message || "Something went wrong!",
-      });
     }
-  };
+  } catch (error) {
+    await Swal.fire({
+      icon: "error",
+      title: "Login Failed",
+      text: error.message || "Invalid credentials. Please try again!",
+    });
+  }
+};
+  
+
+ const handleGoogleLogin = async () => {
+   try {
+     const response = await dispatch(loginWithGoogle()).unwrap();
+
+     if (response) {
+       const userData = {
+         uid: response.uid,
+         email: response.email,
+         role: response.role, // Include the role in the userData object
+       };
+       localStorage.setItem("user", JSON.stringify(userData));
+
+       await Swal.fire({
+         icon: "success",
+         title: "Login Successful",
+         text: "Welcome back!",
+         timer: 2000,
+         showConfirmButton: false,
+       });
+
+       if (response.role === "owner") {
+         navigate("/landlorddashboard");
+       } else {
+         navigate("/");
+       }
+     }
+   } catch (error) {
+     await Swal.fire({
+       icon: "error",
+       title: "Login Failed",
+       text: error.message || "Something went wrong!",
+     });
+   }
+ };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 flex items-center justify-center p-6">

@@ -168,6 +168,7 @@ const PropertiesDetails = () => {
         </div>
         {/* FAQ Section */}
         <FAQ />
+        
         </div>
     <VideoSection/>
      
