@@ -1,12 +1,12 @@
 import React from "react";
 import Nav from "../components/Nav";
-import PropertiesCard from "../components/PropertiesCard";
+import MyProperties from "../components/MyProperties";
 
 function LandlordDashboard() {
   return (
     <div>
       <Nav/>
-      <PropertiesCard />
+      <MyProperties/>
     </div>
   );
 }
