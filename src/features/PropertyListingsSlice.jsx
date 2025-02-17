@@ -1,8 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  offices: [], // Array of properties
-  selectedProperty: null, // Currently selected property
+  offices: [], 
+  selectedProperty: null, 
 };
 
 const PropertyListingsSlice = createSlice({
@@ -14,16 +14,16 @@ const PropertyListingsSlice = createSlice({
       // Ensure each property has an `id` field
       state.offices = action.payload.map((property) => ({
         ...property,
-        id: property.id || property.key, // Use `id` or `key` if available
+        id: property.id || property.key, 
       }));
       console.log("Offices stored in Redux:", state.offices); // Debug
     },
 
     // Set the currently selected property
-    setSelectedProperty: (state, action) => {
-      state.selectedProperty = action.payload;
-      console.log("Selected property:", state.selectedProperty); // Debug
-    },
+    // setSelectedProperty: (state, action) => {
+    //   state.selectedProperty = action.payload;
+    //   console.log("Selected property:", state.selectedProperty); 
+    // },
   },
 });
 
