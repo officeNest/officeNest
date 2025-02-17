@@ -1,14 +1,10 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { ref, get, set } from "firebase/database";
-import { db, auth, storage } from "../firebase"; // Import storage
+import { db, auth } from "../firebase"; // Import Firebase services
 import { setUserProfile, setLoading, setError } from "../features/userSlice";
-import {
-  getDownloadURL,
-  uploadBytes,
-  ref as storageRef,
-} from "firebase/storage"; // Firebase Storage methods
 import { FaCamera } from "react-icons/fa"; // Camera icon for image upload
+import { onAuthStateChanged } from "firebase/auth"; // Auth state listener
 
 const UserProfile = () => {
   const dispatch = useDispatch();
@@ -18,7 +14,7 @@ const UserProfile = () => {
     name: user.name || "",
     phone: user.phone || "",
     city: user.city || "",
-    profileImage: user.profileImage || "", // Profile image URL
+    profileImage: user.profileImage || "", // Profile image URL or Base64 string
   });
 
   const [rentalHistory, setRentalHistory] = useState([]); // State to store rental history
@@ -27,92 +23,99 @@ const UserProfile = () => {
 
   // Fetch user data and rental history from Firebase
   useEffect(() => {
-    if (!userId) {
-      console.error("User not authenticated!");
-      return;
-    }
+    // Listen for authentication state changes
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // User is authenticated, fetch data
+        fetchUserData(user.uid);
+      } else {
+        console.error("User not authenticated!");
+        // Optionally, redirect to login page or show a message
+      }
+    });
 
-    const fetchUserData = async () => {
-      dispatch(setLoading(true));
-      try {
-        // Fetch user profile data
-        const userRef = ref(db, `users/${userId}`);
-        const userSnapshot = await get(userRef);
-        if (userSnapshot.exists()) {
-          const userData = userSnapshot.val();
-          console.log("Fetched user data:", userData);
+    // Cleanup listener on unmount
+    return () => unsubscribe();
+  }, [dispatch]);
 
-          // Dispatch the setUserProfile action to update Redux state
-          dispatch(
-            setUserProfile({
-              name: userData.name || "",
-              email: userData.email || "",
-              role: userData.role || "",
-              status: userData.status || "",
-              propertyCount: userData.propertyCount || 0,
-              uid: userData.uid || userId,
-              phone: userData.phone || "",
-              city: userData.city || "",
-              profileImage: userData.profileImage || "", // Profile image URL
-            })
-          );
+  const fetchUserData = async (userId) => {
+    dispatch(setLoading(true));
+    try {
+      // Fetch user profile data
+      const userRef = ref(db, `users/${userId}`);
+      const userSnapshot = await get(userRef);
+      if (userSnapshot.exists()) {
+        const userData = userSnapshot.val();
+        console.log("Fetched user data:", userData);
 
-          // Update local editable state
-          setEditableProfile({
+        // Dispatch the setUserProfile action to update Redux state
+        dispatch(
+          setUserProfile({
             name: userData.name || "",
+            email: userData.email || "",
+            role: userData.role || "",
+            status: userData.status || "",
+            propertyCount: userData.propertyCount || 0,
+            uid: userData.uid || userId,
             phone: userData.phone || "",
             city: userData.city || "",
-            profileImage: userData.profileImage || "", // Profile image URL
-          });
-        } else {
-          console.log("No user data found for ID:", userId);
-        }
+            profileImage: userData.profileImage || "", // Profile image URL or Base64 string
+          })
+        );
 
-        // Fetch rental history from the "payments" collection
-        const paymentsRef = ref(db, "payments");
-        const paymentsSnapshot = await get(paymentsRef);
-        if (paymentsSnapshot.exists()) {
-          const paymentsData = paymentsSnapshot.val();
-          const userPayments = Object.values(paymentsData).filter(
-            (payment) => payment.userId === userId
-          );
-
-          // Fetch property details for each payment
-          const rentalHistoryWithPropertyDetails = await Promise.all(
-            userPayments.map(async (payment) => {
-              const propertyRef = ref(db, `properties/${payment.propertyId}`);
-              const propertySnapshot = await get(propertyRef);
-              if (propertySnapshot.exists()) {
-                const propertyData = propertySnapshot.val();
-                return {
-                  ...payment,
-                  propertyName: propertyData.name,
-                  propertyPrice: propertyData.price,
-                };
-              } else {
-                return {
-                  ...payment,
-                  propertyName: "Unknown Property",
-                  propertyPrice: "N/A",
-                };
-              }
-            })
-          );
-
-          setRentalHistory(rentalHistoryWithPropertyDetails); // Set rental history with property details
-        } else {
-          console.log("No payments found.");
-        }
-      } catch (error) {
-        dispatch(setError("Error fetching data"));
-        console.error("Error fetching data:", error);
-      } finally {
-        dispatch(setLoading(false));
+        // Update local editable state
+        setEditableProfile({
+          name: userData.name || "",
+          phone: userData.phone || "",
+          city: userData.city || "",
+          profileImage: userData.profileImage || "", // Profile image URL or Base64 string
+        });
+      } else {
+        console.log("No user data found for ID:", userId);
       }
-    };
 
-    fetchUserData();
-  }, [dispatch, userId]);
+      // Fetch rental history from the "payments" collection
+      const paymentsRef = ref(db, "payments");
+      const paymentsSnapshot = await get(paymentsRef);
+      if (paymentsSnapshot.exists()) {
+        const paymentsData = paymentsSnapshot.val();
+        const userPayments = Object.values(paymentsData).filter(
+          (payment) => payment.userId === userId
+        );
+
+        // Fetch property details for each payment
+        const rentalHistoryWithPropertyDetails = await Promise.all(
+          userPayments.map(async (payment) => {
+            const propertyRef = ref(db, `properties/${payment.propertyId}`);
+            const propertySnapshot = await get(propertyRef);
+            if (propertySnapshot.exists()) {
+              const propertyData = propertySnapshot.val();
+              return {
+                ...payment,
+                propertyName: propertyData.name,
+                propertyPrice: propertyData.price,
+              };
+            } else {
+              return {
+                ...payment,
+                propertyName: "Unknown Property",
+                propertyPrice: "N/A",
+              };
+            }
+          })
+        );
+
+        setRentalHistory(rentalHistoryWithPropertyDetails); // Set rental history with property details
+      } else {
+        console.log("No payments found.");
+      }
+    } catch (error) {
+      dispatch(setError("Error fetching data"));
+      console.error("Error fetching data:", error);
+    } finally {
+      dispatch(setLoading(false));
+    }
+  };
 
   // Handle profile update
   const handleUpdate = async () => {
@@ -130,7 +133,7 @@ const UserProfile = () => {
         name: editableProfile.name,
         phone: editableProfile.phone,
         city: editableProfile.city,
-        profileImage: editableProfile.profileImage, // Profile image URL
+        profileImage: editableProfile.profileImage, // Profile image URL or Base64 string
       });
 
       console.log("Profile updated successfully:", editableProfile);
@@ -141,37 +144,50 @@ const UserProfile = () => {
     }
   };
 
-  // Handle image upload
+  // Handle image upload as Base64
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
-    if (file) {
+    if (file && userId) {
+      // Validate file type and size
+      if (!file.type.startsWith("image/")) {
+        alert("Please upload a valid image file.");
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        // 5MB limit
+        alert("File size must be less than 5MB.");
+        return;
+      }
+
       try {
         dispatch(setLoading(true));
 
-        // Upload the image to Firebase Storage
-        const imageRef = storageRef(storage, `profileImages/${userId}`);
-        await uploadBytes(imageRef, file);
+        // Convert the image file to a Base64 string
+        const reader = new FileReader();
+        reader.onload = async (event) => {
+          const base64Image = event.target.result;
 
-        // Get the download URL of the uploaded image
-        const imageUrl = await getDownloadURL(imageRef);
+          // Update the local state with the new Base64 image
+          setEditableProfile({ ...editableProfile, profileImage: base64Image });
 
-        // Update the local state with the new image URL
-        setEditableProfile({ ...editableProfile, profileImage: imageUrl });
+          // Update Firebase Realtime Database with the new Base64 image
+          const userRef = ref(db, `users/${userId}`);
+          await set(userRef, {
+            ...user,
+            profileImage: base64Image,
+          });
 
-        // Update Firebase Realtime Database with the new image URL
-        const userRef = ref(db, `users/${userId}`);
-        await set(userRef, {
-          ...user,
-          profileImage: imageUrl,
-        });
-
-        console.log("Profile image updated successfully:", imageUrl);
+          console.log("Profile image updated successfully.");
+        };
+        reader.readAsDataURL(file); // Convert file to Base64
       } catch (error) {
         console.error("Error uploading image:", error);
         alert("Error uploading image: " + error.message);
       } finally {
         dispatch(setLoading(false));
       }
+    } else {
+      alert("Please log in to upload a profile image.");
     }
   };
 
@@ -188,7 +204,7 @@ const UserProfile = () => {
             <img
               src={
                 editableProfile.profileImage ||
-                "https://via.placeholder.com/150"
+                "/path/to/local/placeholder-image.png" // Local fallback image
               }
               alt="Profile"
               className="w-full h-full object-cover"
@@ -319,7 +335,7 @@ const UserProfile = () => {
                     {rental.propertyName}
                   </p>
                   <p className="text-gray-700">
-                    <span className="font-semibold">Price:</span> 
+                    <span className="font-semibold">Price:</span>
                     {rental.propertyPrice} JD
                   </p>
                   <p className="text-gray-700">
