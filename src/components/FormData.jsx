@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import axios from "axios";
 import Nav from "./Nav";
-
+import { useNavigate } from 'react-router-dom';
 export default function FormData() {
+  <Nav/>
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
     type: "",
@@ -72,6 +74,7 @@ export default function FormData() {
         approvment: false,
         description: "",
       });
+      navigate('/my');
     } catch (error) {
       console.error("Error adding property:", error);
       alert("Failed to add property.");

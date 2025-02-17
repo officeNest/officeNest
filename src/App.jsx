@@ -25,6 +25,7 @@ import OfficeMap from "./components/OfficeMap";
 import DashboardAdmin from "./components/DashboardAdmin";
 import RequestsAdmin from "./components/RequestsAdmin";
 import UsersAdmin from "./components/UsersAdmin";
+import EditCard from "./components/EditCard";
 
 function App() {
   return (
@@ -75,6 +76,7 @@ function Layout() {
         <Route path="/request" element={<UserRequests />} />
         <Route path="/my" element={<MyProperties />} />
        
+        <Route path="/edit/:id" element={<EditCard />} />
 
       </Routes>
     </>

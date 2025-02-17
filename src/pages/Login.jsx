@@ -191,7 +191,7 @@ const Login = () => {
               <button
                 type="button"
                 onClick={handleGoogleLogin}
-                className="w-full bg-red-600 text-white py-3 rounded-md hover:bg-red-700 transition-colors duration-200 font-medium flex items-center justify-center"
+                className="w-full bg-[#0C2BA1] text-white py-3 rounded-md hover:bg-red-700 transition-colors duration-200 font-medium flex items-center justify-center"
               >
                 <img
                   src="https://img.icons8.com/color/24/000000/google-logo.png"

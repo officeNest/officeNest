@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchOffices, softDeleteOffice } from "../features/officesSlice"; // Import the softDeleteOffice action
+import { fetchOffices, softDeleteOffice } from "../features/officesSlice";
 import Sidebar from "./Sidebar";
+import { FaTrash } from "react-icons/fa"; // Import Trash Icon
+import Swal from "sweetalert2"; // Import SweetAlert2
+import "sweetalert2/dist/sweetalert2.min.css";
 
 const DashboardAdmin = () => {
   const dispatch = useDispatch();
@@ -23,10 +26,22 @@ const DashboardAdmin = () => {
     }
   }, [offices, filter]);
 
-  // Handle soft delete action
+  // Handle delete confirmation
   const handleDelete = (officeId) => {
-    // Dispatch the soft delete action
-    dispatch(softDeleteOffice(officeId));
+    Swal.fire({
+      title: "Are you sure?",
+      text: "This property will be marked as deleted!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        dispatch(softDeleteOffice(officeId));
+        Swal.fire("Deleted!", "The property has been deleted.", "success");
+      }
+    });
   };
 
   // Loading state
@@ -55,46 +70,17 @@ const DashboardAdmin = () => {
 
         {/* Filter Buttons */}
         <div className="flex gap-4 mb-6">
-          <button
-            className={`px-4 py-2 rounded-md font-semibold transition ${
-              filter === "all"
-                ? "bg-[#0C2BA1] text-white"
-                : "bg-gray-200 text-gray-700"
-            }`}
-            onClick={() => setFilter("all")}
-          >
-            All Properties
-          </button>
-          <button
-            className={`px-4 py-2 rounded-md font-semibold transition ${
-              filter === "Serviced Offices"
-                ? "bg-[#0C2BA1] text-white"
-                : "bg-gray-200 text-gray-700"
-            }`}
-            onClick={() => setFilter("Serviced Offices")}
-          >
-            Serviced Offices
-          </button>
-          <button
-            className={`px-4 py-2 rounded-md font-semibold transition ${
-              filter === "Coworking Spaces"
-                ? "bg-[#0C2BA1] text-white"
-                : "bg-gray-200 text-gray-700"
-            }`}
-            onClick={() => setFilter("Coworking Spaces")}
-          >
-            Coworking Spaces
-          </button>
-          <button
-            className={`px-4 py-2 rounded-md font-semibold transition ${
-              filter === "Commercial Spaces"
-                ? "bg-[#0C2BA1] text-white"
-                : "bg-gray-200 text-gray-700"
-            }`}
-            onClick={() => setFilter("Commercial Spaces")}
-          >
-            Commercial Spaces
-          </button>
+          {["all", "Serviced Offices", "Coworking Spaces", "Commercial Spaces"].map((type) => (
+            <button
+              key={type}
+              className={`px-4 py-2 rounded-md font-semibold transition ${
+                filter === type ? "bg-[#0C2BA1] text-white" : "bg-gray-200 text-gray-700"
+              }`}
+              onClick={() => setFilter(type)}
+            >
+              {type === "all" ? "All Properties" : type}
+            </button>
+          ))}
         </div>
 
         {/* Display filtered offices */}
@@ -111,39 +97,32 @@ const DashboardAdmin = () => {
                   className="w-full h-full object-cover"
                 />
                 <div
-                  className={`absolute top-4 right-4 px-3 py-1 rounded-full text-sm font-medium
-                    ${
-                      office.status === "Available"
-                        ? "bg-green-100 text-green-700"
-                        : "bg-red-100 text-red-700"
-                    }`}
+                  className={`absolute top-4 right-4 px-3 py-1 rounded-full text-sm font-medium ${
+                    office.status === "Available" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+                  }`}
                 >
                   {office.status}
                 </div>
               </div>
-              <div className="p-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-2">
-                  {office.name}
-                </h2>
-                <div className="space-y-2">
-                  <div className="flex items-center text-gray-600">
-                    <span className="font-medium">Type:</span>
-                    <span className="ml-2">{office.type}</span>
-                  </div>
-                  <p className="text-gray-600">{office.description}</p>
-                  <div className="pt-4">
-                    <p className="text-lg font-bold text-blue-600">
-                      {office.price} JD
-                    </p>
+              <div className="p-6 flex justify-between items-start">
+                <div>
+                  <h2 className="text-xl font-bold text-gray-900 mb-2">{office.name}</h2>
+                  <div className="space-y-2">
+                    <div className="flex items-center text-gray-600">
+                      <span className="font-medium">Type:</span>
+                      <span className="ml-2">{office.type}</span>
+                    </div>
+                    <p className="text-gray-600">{office.description}</p>
+                    <div className="pt-4">
+                      <p className="text-lg font-bold text-blue-600">{office.price} JD</p>
+                    </div>
                   </div>
                 </div>
-                {/* Soft delete button */}
-                <button
+                {/* Soft delete icon */}
+                <FaTrash
+                  className="text-red-500 cursor-pointer hover:text-red-700 transition text-lg"
                   onClick={() => handleDelete(office.id)}
-                  className="mt-4 px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
-                >
-                  Delete
-                </button>
+                />
               </div>
             </div>
           ))}
