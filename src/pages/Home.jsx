@@ -4,21 +4,23 @@ import HomeHero from "../components/HomeHero";
 import "../styles/main-style.css";
 import GridHome from "../components/GridHome";
 
-import FeaturedOffices from "../components/FeaturedOffices"
+import FeaturedOffices from "../components/FeaturedOffices";
 import TrustSection from "../components/TrustSection";
 import Testimonials from "../components/Testimonials";
+import Chatbot from "../components/chatbot";
 
-function Home (){
+function Home() {
   return (
     <>
-    <div className="pt-16">
-    <HomeHero/>
-    <GridHome/>
-    <FeaturedOffices/>
-    <TrustSection/>
-    <Testimonials/>
-    <Footer/>
-    </div>
+      <div className="pt-16">
+        <HomeHero />
+        <GridHome />
+        <FeaturedOffices />
+        <TrustSection />
+        <Testimonials />
+        <Chatbot />
+        <Footer />
+      </div>
     </>
   );
 }
