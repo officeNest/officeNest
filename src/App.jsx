@@ -72,6 +72,7 @@ function Layout() {
 
   return (
     <>
+      {/* Conditionally render Navbar */}
       {!hideNavbarRoutes.includes(location.pathname) && <Navbar />}
       <Routes>
         {/* Public Routes */}
