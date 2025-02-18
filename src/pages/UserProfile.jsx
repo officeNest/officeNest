@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { ref, get, set } from "firebase/database";
 import { db, auth } from "../firebase"; // Import Firebase services
-import { setUserProfile, setLoading, setError } from "../features/userSlice";
 import { FaCamera } from "react-icons/fa"; // Camera icon for image upload
 import { onAuthStateChanged } from "firebase/auth"; // Auth state listener
 
