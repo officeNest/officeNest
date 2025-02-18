@@ -1,19 +1,21 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import axios from 'axios';
 import Swal from "sweetalert2";
 import { Calendar as CalendarIcon, Clock, Users } from "lucide-react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { ref, get } from "firebase/database";
 import { db } from "../firebase"; // Import Firebase database instance
+import { createBooking } from "../features/bookingSlice"; // Import the createBooking thunk
 
 const Booking = () => {
   const { propertyId } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { loading } = useSelector((state) => state.bookings) || { loading: false };
+  const { loading } = useSelector((state) => state.bookings) || {
+    loading: false,
+  };
 
   const user = localStorage.getItem("user");
   const userData = user ? JSON.parse(user) : null;
@@ -21,8 +23,8 @@ const Booking = () => {
 
   const [checkInDate, setCheckInDate] = useState(null);
   const [checkOutDate, setCheckOutDate] = useState(null);
-  const [checkInTime, setCheckInTime] = useState("14:00"); // Default to 2 PM
-  const [checkOutTime, setCheckOutTime] = useState("17:00"); // Default to 5 PM
+  const [checkInTime, setCheckInTime] = useState("12:00");
+  const [checkOutTime, setCheckOutTime] = useState("12:00");
   const [numberOfPeople, setNumberOfPeople] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false); // State for T&C modal
   const [isTermsAccepted, setIsTermsAccepted] = useState(false); // State for T&C checkbox
@@ -201,6 +203,23 @@ const Booking = () => {
       // Dispatch the createBooking thunk
       await dispatch(createBooking(bookingData)).unwrap();
 
+      // Show SweetAlert with booking details
+      Swal.fire({
+        icon: "success",
+        title: "Booking Confirmed!",
+        html: `
+          <div>
+            <p><strong>Check-in:</strong> ${new Date(
+              checkInDate
+            ).toLocaleDateString()} at ${checkInTime}</p>
+            <p><strong>Check-out:</strong> ${new Date(
+              checkOutDate
+            ).toLocaleDateString()} at ${checkOutTime}</p>
+            <p><strong>Number of People:</strong> ${numberOfPeople}</p>
+          </div>
+        `,
+      });
+
       // Navigate to the payment page after successful booking creation
       navigate(
         `/payment/${propertyId}?checkInDate=${checkInDate.toISOString()}&checkOutDate=${checkOutDate.toISOString()}&checkInTime=${checkInTime}&checkOutTime=${checkOutTime}&numberOfPeople=${numberOfPeople}`
@@ -226,8 +245,8 @@ const Booking = () => {
         </h2>
 
         <form onSubmit={handleBooking} className="mt-6 space-y-6">
+          {/* Check-in Date and Time */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Check-in Date */}
             <div className="space-y-2">
               <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
                 <CalendarIcon className="w-5 h-5 text-[#0C2BA1]" /> Check-in
@@ -240,21 +259,11 @@ const Booking = () => {
                 startDate={checkInDate}
                 endDate={checkOutDate}
                 minDate={new Date()}
-                excludeDates={existingBookings.flatMap((booking) => {
-                  const start = new Date(booking.checkInDate);
-                  const end = new Date(booking.checkOutDate);
-                  const dates = [];
-                  for (let d = start; d <= end; d.setDate(d.getDate() + 1)) {
-                    dates.push(new Date(d));
-                  }
-                  return dates;
-                })}
                 className="w-full p-3 border border-gray-300 rounded-lg focus:border-[#0C2BA1] focus:ring-2 focus:ring-[#0C2BA1] outline-none transition-all"
                 required
               />
             </div>
 
-            {/* Check-in Time */}
             <div className="space-y-2">
               <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
                 <Clock className="w-5 h-5 text-[#0C2BA1]" /> Check-in Time
@@ -268,7 +277,7 @@ const Booking = () => {
               />
             </div>
 
-            {/* Check-out Date */}
+            {/* Check-out Date and Time */}
             <div className="space-y-2">
               <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
                 <CalendarIcon className="w-5 h-5 text-[#0C2BA1]" /> Check-out
@@ -281,21 +290,11 @@ const Booking = () => {
                 startDate={checkInDate}
                 endDate={checkOutDate}
                 minDate={checkInDate || new Date()}
-                excludeDates={existingBookings.flatMap((booking) => {
-                  const start = new Date(booking.checkInDate);
-                  const end = new Date(booking.checkOutDate);
-                  const dates = [];
-                  for (let d = start; d <= end; d.setDate(d.getDate() + 1)) {
-                    dates.push(new Date(d));
-                  }
-                  return dates;
-                })}
                 className="w-full p-3 border border-gray-300 rounded-lg focus:border-[#0C2BA1] focus:ring-2 focus:ring-[#0C2BA1] outline-none transition-all"
                 required
               />
             </div>
 
-            {/* Check-out Time */}
             <div className="space-y-2">
               <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
                 <Clock className="w-5 h-5 text-[#0C2BA1]" /> Check-out Time
@@ -349,7 +348,7 @@ const Booking = () => {
           {/* Confirm Booking Button */}
           <button
             type="submit"
-            disabled={loading || !isTermsAccepted} // Disable if terms are not accepted
+            disabled={loading || !isTermsAccepted}
             className="mt-6 w-full bg-[#0C2BA1] text-white p-4 rounded-lg flex items-center justify-center gap-2 font-medium hover:bg-[#0A2590] transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
           >
             {loading ? "Processing..." : "Confirm Booking"}
@@ -363,10 +362,9 @@ const Booking = () => {
   );
 };
 
-
 // Terms and Conditions Modal
 const TermsAndConditionsModal = ({ isOpen, onClose }) => {
-  if (!isOpen) return null; // Don't render the modal if it's not open
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
@@ -374,65 +372,7 @@ const TermsAndConditionsModal = ({ isOpen, onClose }) => {
         <h2 className="text-3xl font-bold text-[#0C2BA1] mb-6">
           Terms and Conditions for Renting Office Space
         </h2>
-
-        {/* Scrollable Content */}
-        <div className="max-h-[60vh] overflow-y-auto space-y-4 mt-6">
-          <h3 className="text-2xl font-semibold text-[#0C2BA1]">
-            1. General Terms
-          </h3>
-          <p>
-            1.1. The office space rental agreement is between you (the "Renter")
-            and [Your Company Name] ("We," "Us," or "Our").
-          </p>
-          <p>1.2. You must be at least 18 years old to make a booking.</p>
-          <p>
-            1.3. All bookings are subject to availability and confirmation by
-            us.
-          </p>
-
-          <h3 className="text-2xl font-semibold text-[#0C2BA1]">
-            2. Rental Period
-          </h3>
-          <p>
-            2.1. The rental period is defined by the check-in and check-out
-            dates and times selected during the booking process.
-          </p>
-          <p>
-            2.2. Any extension or modification of the rental period must be
-            requested at least 48 hours before the check-out date and is subject
-            to availability.
-          </p>
-
-          <h3 className="text-2xl font-semibold text-[#0C2BA1]">
-            3. Payments and Cancellations
-          </h3>
-          <p>
-            3.1. Full payment is required at the time of booking. Payment can be
-            made using the methods available on our platform.
-          </p>
-          <p>
-            3.2. A booking may be canceled free of charge up to 24 hours before
-            the check-in date. Cancellations made after this period may incur a
-            cancellation fee.
-          </p>
-
-          <h3 className="text-2xl font-semibold text-[#0C2BA1]">
-            4. Responsibilities of the Renter
-          </h3>
-          <p>
-            4.1. The Renter is responsible for maintaining the office space in a
-            clean and safe condition during the rental period.
-          </p>
-
-          <h3 className="text-2xl font-semibold text-[#0C2BA1]">
-            5. Liability
-          </h3>
-          <p>
-            5.1. We are not liable for any loss, injury, or damage to the
-            Renter’s property or personal belongings during the rental period.
-          </p>
-        </div>
-
+        {/* Modal content */}
         <div className="mt-6 flex justify-between">
           <button
             onClick={onClose}
@@ -443,7 +383,6 @@ const TermsAndConditionsModal = ({ isOpen, onClose }) => {
         </div>
       </div>
     </div>
-    
   );
 };
 
