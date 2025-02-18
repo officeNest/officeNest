@@ -26,6 +26,7 @@ import OfficeMap from "./components/OfficeMap";
 import DashboardAdmin from "./components/DashboardAdmin";
 import RequestsAdmin from "./components/RequestsAdmin";
 import UsersAdmin from "./components/UsersAdmin";
+import EditCard from "./components/EditCard";
 
 // ProtectedRoute Component
 const ProtectedRoute = ({ allowedRoles, children }) => {
@@ -88,6 +89,7 @@ function Layout() {
         <Route path="/be-a-landlord" element={<LandlordPage />} />
         <Route path="/booking/:propertyId" element={<Booking />} />
         <Route path="/UserProfile" element={<UserProfile />} />
+        <Route path="/edit/:id" element={<EditCard />} />
 
         {/* Protected Routes */}
         <Route

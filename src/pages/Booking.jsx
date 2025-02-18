@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { createBooking } from "../features/bookingSlice";
+import axios from 'axios';
 import Swal from "sweetalert2";
 import { Calendar as CalendarIcon, Clock, Users } from "lucide-react";
 import DatePicker from "react-datepicker";
@@ -10,16 +10,14 @@ import { ref, get } from "firebase/database";
 import { db } from "../firebase"; // Import Firebase database instance
 
 const Booking = () => {
-  const { propertyId } = useParams(); // Get propertyId from URL params
+  const { propertyId } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { loading } = useSelector((state) => state.bookings) || {
-    loading: false,
-  };
+  const { loading } = useSelector((state) => state.bookings) || { loading: false };
 
-  // Retrieve and parse user data from localStorage
   const user = localStorage.getItem("user");
-  const userId = user ? JSON.parse(user).uid : null;
+  const userData = user ? JSON.parse(user) : null;
+  const userId = userData ? userData.uid : null;
 
   const [checkInDate, setCheckInDate] = useState(null);
   const [checkOutDate, setCheckOutDate] = useState(null);
@@ -217,10 +215,7 @@ const Booking = () => {
     }
   };
 
-  // Open T&C modal
   const openModal = () => setIsModalOpen(true);
-
-  // Close T&C modal
   const closeModal = () => setIsModalOpen(false);
 
   return (
@@ -368,7 +363,6 @@ const Booking = () => {
   );
 };
 
-export default Booking;
 
 // Terms and Conditions Modal
 const TermsAndConditionsModal = ({ isOpen, onClose }) => {
@@ -449,5 +443,8 @@ const TermsAndConditionsModal = ({ isOpen, onClose }) => {
         </div>
       </div>
     </div>
+    
   );
 };
+
+export default Booking;
