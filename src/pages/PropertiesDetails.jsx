@@ -170,10 +170,11 @@ const PropertiesDetails = () => {
         <FAQ />
         
         </div>
+       
     <VideoSection/>
      
-       <Reviews officeId={propertyId}/>
-     
+    <Reviews officeId={propertyId}/>
+    
     <Footer/>
     </>
   );
