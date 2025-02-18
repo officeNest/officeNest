@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   offices: [], 
-  selectedProperty: null, 
+  // selectedProperty: null, 
 };
 
 const PropertyListingsSlice = createSlice({
