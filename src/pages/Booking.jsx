@@ -187,61 +187,30 @@ const Booking = () => {
       }
 
       const bookingData = {
-        propertyId,
         userId,
-        userName: userData.displayName || userData.email,
-        checkInDate,
-        checkOutDate,
+        propertyId,
+        checkInDate: checkInDate.toISOString(),
+        checkOutDate: checkOutDate.toISOString(),
+        checkInTime,
+        checkOutTime,
         numberOfPeople,
-        status: 'pending',
-        createdAt: new Date().toISOString(),
-        userEmail: userData.email
       };
 
-      try {
-        // Get property details to find owner
-        const propertyResponse = await axios.get(`https://officenest-380c1-default-rtdb.firebaseio.com/properties/${propertyId}.json`);
+      console.log("Dispatching booking data:", bookingData);
 
-        if (propertyResponse.data) {
-          bookingData.ownerId = propertyResponse.data.ownerId;
-          bookingData.propertyName = propertyResponse.data.name;
-        }
+      // Dispatch the createBooking thunk
+      await dispatch(createBooking(bookingData)).unwrap();
 
-        // Save booking request to Firebase
-        await axios.post(
-          'https://officenest-380c1-default-rtdb.firebaseio.com/bookings.json',
-          bookingData
-        );
-
-        Swal.fire({
-          icon: "success",
-          title: "Booking Request Sent",
-          text: "Your booking request has been sent to the property owner. You will be notified once it's approved.",
-        });
-
-        console.log("Dispatching booking data:", bookingData);
-
-        // Dispatch the createBooking thunk
-        await dispatch(createBooking(bookingData)).unwrap();
-
-        // Navigate to the payment page after successful booking creation
-        navigate(
-          `/payment/${propertyId}?checkInDate=${checkInDate.toISOString()}&checkOutDate=${checkOutDate.toISOString()}&checkInTime=${checkInTime}&checkOutTime=${checkOutTime}&numberOfPeople=${numberOfPeople}`
-        );
-      } catch (error) {
-        console.error("Booking failed:", error);
-        Swal.fire({
-          icon: "error",
-          title: "Booking Failed",
-          text: error.message || "An error occurred while creating the booking.",
-        });
-      }
+      // Navigate to the payment page after successful booking creation
+      navigate(
+        `/payment/${propertyId}?checkInDate=${checkInDate.toISOString()}&checkOutDate=${checkOutDate.toISOString()}&checkInTime=${checkInTime}&checkOutTime=${checkOutTime}&numberOfPeople=${numberOfPeople}`
+      );
     } catch (error) {
-      console.error("Error fetching property details:", error);
+      console.error("Booking failed:", error);
       Swal.fire({
         icon: "error",
-        title: "Error",
-        text: "An error occurred while fetching property details.",
+        title: "Booking Failed",
+        text: error.message || "An error occurred while creating the booking.",
       });
     }
   };
@@ -394,6 +363,7 @@ const Booking = () => {
   );
 };
 
+
 // Terms and Conditions Modal
 const TermsAndConditionsModal = ({ isOpen, onClose }) => {
   if (!isOpen) return null; // Don't render the modal if it's not open
@@ -473,6 +443,7 @@ const TermsAndConditionsModal = ({ isOpen, onClose }) => {
         </div>
       </div>
     </div>
+    
   );
 };
 

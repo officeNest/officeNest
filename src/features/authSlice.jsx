@@ -5,16 +5,18 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signInWithPopup,
+  signOut,
 } from "firebase/auth";
 
-// Function to extract user data from Firebase Auth
-const extractUserData = (user) => ({
-  uid: user.uid,
-  email: user.email,
-  emailVerified: user.emailVerified,
-  displayName: user.displayName,
-  photoURL: user.photoURL,
-});
+const extractUserData = (user) => {
+  return {
+    uid: user.uid,
+    email: user.email,
+    emailVerified: user.emailVerified,
+    displayName: user.displayName || "Guest",
+    photoURL: user.photoURL || "",
+  };
+};
 
 // Load user from localStorage if available
 const loadUserFromStorage = () => {
@@ -37,13 +39,14 @@ export const loginUser = createAsyncThunk(
         const userDetails = userSnapshot.val();
         userData.name = userDetails.name || "Guest";
         userData.role = userDetails.role || "visitor";
-
-        localStorage.setItem("user", JSON.stringify(userData));
       }
 
-      return { success: true, ...userData };
+      localStorage.setItem("user", JSON.stringify(userData));
+      return userData;
     } catch (error) {
-      return rejectWithValue(error.message || "An unknown error occurred");
+      return rejectWithValue(
+        error.message || "An error occurred while logging in"
+      );
     }
   }
 );
@@ -66,12 +69,10 @@ export const signupUser = createAsyncThunk(
       });
 
       const fullUserData = { ...userData, role: "visitor", name };
-
       localStorage.setItem("user", JSON.stringify(fullUserData));
-
       return fullUserData;
     } catch (error) {
-      return rejectWithValue(error.message);
+      return rejectWithValue(error.message || "Signup failed");
     }
   }
 );
@@ -103,59 +104,36 @@ export const loginWithGoogle = createAsyncThunk(
         role: "visitor",
         name: user.displayName || "Guest",
       };
-
       localStorage.setItem("user", JSON.stringify(fullUserData));
-
       return fullUserData;
     } catch (error) {
-      return rejectWithValue(error.message);
+      return rejectWithValue(error.message || "Google login failed");
     }
   }
 );
 
-// Async thunk to listen for role changes in Firebase
-export const listenForRoleChanges = createAsyncThunk(
-  "auth/listenForRoleChanges",
-  async (_, { getState, dispatch }) => {
-    const user = getState().auth.user;
-    if (!user) return;
-
-    const userRef = ref(db, `users/${user.uid}`);
-
-    onValue(userRef, (snapshot) => {
-      if (snapshot.exists()) {
-        const updatedUserData = snapshot.val();
-
-        // Update Redux store and localStorage
-        dispatch(updateUserRole(updatedUserData.role));
-        localStorage.setItem(
-          "user",
-          JSON.stringify({ ...user, role: updatedUserData.role })
-        );
-      }
-    });
+export const logoutUser = createAsyncThunk(
+  "auth/logout",
+  async (_, { dispatch }) => {
+    await signOut(auth);
+    localStorage.removeItem("user");
+    dispatch(logout());
   }
 );
-
-// Function to log out a user
-export const logoutUser = () => (dispatch) => {
-  localStorage.removeItem("user");
-  dispatch(logout());
-};
 
 // Create the auth slice
 const authSlice = createSlice({
   name: "auth",
   initialState: {
     user: loadUserFromStorage(),
-    role: loadUserFromStorage()?.role || null,
+    role: loadUserFromStorage()?.role || "visitor",
     loading: false,
     error: null,
   },
   reducers: {
     logout: (state) => {
       state.user = null;
-      state.role = null;
+      state.role = "visitor";
       localStorage.removeItem("user");
     },
     updateUserRole: (state, action) => {
@@ -202,6 +180,10 @@ const authSlice = createSlice({
       .addCase(loginWithGoogle.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+      .addCase(logoutUser.fulfilled, (state) => {
+        state.user = null;
+        state.role = "visitor";
       });
   },
 });

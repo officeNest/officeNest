@@ -26,20 +26,17 @@ const Signup = () => {
 
     try {
       console.log("User Data:", userData);
-      const response = await dispatch(signupUser(userData)).unwrap();
-      console.log("Signup response:", response);
+      await dispatch(signupUser({ email, password, name: visitorName }));
 
-      if (response) {
-        await Swal.fire({
-          icon: "success",
-          title: "Signup Successful",
-          text: "Your account has been created successfully!",
-          timer: 2000,
-          showConfirmButton: false,
-        });
+      await Swal.fire({
+        icon: "success",
+        title: "Signup Successful",
+        text: "Your account has been created successfully!",
+        timer: 2000,
+        showConfirmButton: false,
+      });
 
-        navigate("/");
-      }
+      navigate("/");
     } catch (error) {
       console.error("Signup error:", error);
       await Swal.fire({
