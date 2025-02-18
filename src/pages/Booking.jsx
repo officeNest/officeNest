@@ -82,10 +82,9 @@ const Booking = () => {
     }
     return true; // Date and time are available
   };
-
   const handleBooking = async (e) => {
     e.preventDefault();
-
+  
     if (!userId) {
       Swal.fire({
         icon: "error",
@@ -95,7 +94,7 @@ const Booking = () => {
       navigate("/login");
       return;
     }
-
+  
     if (!isTermsAccepted) {
       Swal.fire({
         icon: "error",
@@ -104,7 +103,7 @@ const Booking = () => {
       });
       return;
     }
-
+  
     if (!checkInDate || !checkOutDate) {
       Swal.fire({
         icon: "error",
@@ -113,7 +112,7 @@ const Booking = () => {
       });
       return;
     }
-
+  
     if (checkInDate >= checkOutDate) {
       Swal.fire({
         icon: "error",
@@ -122,15 +121,11 @@ const Booking = () => {
       });
       return;
     }
-
+  
     const currentDateTime = new Date();
-    const checkInDateTime = new Date(
-      `${checkInDate.toDateString()} ${checkInTime}`
-    );
-    const checkOutDateTime = new Date(
-      `${checkOutDate.toDateString()} ${checkOutTime}`
-    );
-
+    const checkInDateTime = new Date(`${checkInDate.toDateString()} ${checkInTime}`);
+    const checkOutDateTime = new Date(`${checkOutDate.toDateString()} ${checkOutTime}`);
+  
     if (checkInDateTime < currentDateTime) {
       Swal.fire({
         icon: "error",
@@ -139,7 +134,7 @@ const Booking = () => {
       });
       return;
     }
-
+  
     if (checkOutDateTime <= checkInDateTime) {
       Swal.fire({
         icon: "error",
@@ -148,12 +143,12 @@ const Booking = () => {
       });
       return;
     }
-
+  
     try {
       // Fetch property details from Firebase
       const propertyRef = ref(db, `properties/${propertyId}`);
       const propertySnapshot = await get(propertyRef);
-
+  
       if (!propertySnapshot.exists()) {
         Swal.fire({
           icon: "error",
@@ -162,11 +157,10 @@ const Booking = () => {
         });
         return;
       }
-
+  
       const propertyData = propertySnapshot.val();
-      const capacity = propertyData.capacity; // Get the capacity of the property
-
-      // Check if the number of people exceeds the capacity
+      const capacity = propertyData.capacity;
+  
       if (numberOfPeople > capacity) {
         Swal.fire({
           icon: "error",
@@ -175,7 +169,7 @@ const Booking = () => {
         });
         return;
       }
-
+  
       // Check if the selected date and time are available
       if (!isDateTimeRangeAvailable(checkInTime, checkOutTime)) {
         Swal.fire({
@@ -185,7 +179,7 @@ const Booking = () => {
         });
         return;
       }
-
+  
       const bookingData = {
         userId,
         propertyId,
@@ -195,12 +189,12 @@ const Booking = () => {
         checkOutTime,
         numberOfPeople,
       };
-
+  
       console.log("Dispatching booking data:", bookingData);
-
+  
       // Dispatch the createBooking thunk
-      await dispatch(createBooking(bookingData)).unwrap();
-
+      await dispatch(createBooking(bookingData));
+  
       // Navigate to the payment page after successful booking creation
       navigate(
         `/payment/${propertyId}?checkInDate=${checkInDate.toISOString()}&checkOutDate=${checkOutDate.toISOString()}&checkInTime=${checkInTime}&checkOutTime=${checkOutTime}&numberOfPeople=${numberOfPeople}`
@@ -214,7 +208,6 @@ const Booking = () => {
       });
     }
   };
-
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
