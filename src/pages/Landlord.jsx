@@ -292,7 +292,7 @@ const LandlordPage = () => {
                   />
                 </svg>
               ) : null}
-              {isLoading ? "Be a LandLord..." : "Be a LandLord"}
+              {isLoading ? "Be a LandLord..." : "you Dashboard"}
             </button>
           </div>
         </form>

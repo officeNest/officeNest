@@ -5,6 +5,7 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signInWithPopup,
+  signOut,
 } from "firebase/auth";
 
 const extractUserData = (user) => {
@@ -41,13 +42,14 @@ export const loginUser = createAsyncThunk(
         const userDetails = userSnapshot.val();
         userData.name = userDetails.name || "Guest";
         userData.role = userDetails.role || "visitor";
-
-        localStorage.setItem("user", JSON.stringify(userData));
       }
 
-      return { success: true, ...userData };
+      localStorage.setItem("user", JSON.stringify(userData));
+      return userData;
     } catch (error) {
-      return rejectWithValue(error.message || "An unknown error occurred");
+      return rejectWithValue(
+        error.message || "An error occurred while logging in"
+      );
     }
   }
 );
@@ -76,10 +78,9 @@ export const signupUser = createAsyncThunk(
       const fullUserData = { ...userData,flage: false, role: "visitor", name };
 
       localStorage.setItem("user", JSON.stringify(fullUserData));
-
       return fullUserData;
     } catch (error) {
-      return rejectWithValue(error.message);
+      return rejectWithValue(error.message || "Signup failed");
     }
   }
 );
@@ -112,33 +113,35 @@ export const loginWithGoogle = createAsyncThunk(
         flage: false,
         name: user.displayName || "Guest",
       };
-
       localStorage.setItem("user", JSON.stringify(fullUserData));
-
       return fullUserData;
     } catch (error) {
-      return rejectWithValue(error.message);
+      return rejectWithValue(error.message || "Google login failed");
     }
   }
 );
 
-export const logoutUser = () => (dispatch) => {
-  localStorage.removeItem("user");
-  dispatch(logout());
-};
+export const logoutUser = createAsyncThunk(
+  "auth/logout",
+  async (_, { dispatch }) => {
+    await signOut(auth);
+    localStorage.removeItem("user");
+    dispatch(logout());
+  }
+);
 
 const authSlice = createSlice({
   name: "auth",
   initialState: {
     user: loadUserFromStorage(),
-    role: loadUserFromStorage()?.role || null,
+    role: loadUserFromStorage()?.role || "visitor",
     loading: false,
     error: null,
   },
   reducers: {
     logout: (state) => {
       state.user = null;
-      state.role = null;
+      state.role = "visitor";
       localStorage.removeItem("user");
     },
   },
@@ -179,6 +182,10 @@ const authSlice = createSlice({
       .addCase(loginWithGoogle.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+      .addCase(logoutUser.fulfilled, (state) => {
+        state.user = null;
+        state.role = "visitor";
       });
   },
 });

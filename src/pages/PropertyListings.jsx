@@ -138,48 +138,50 @@ const PropertyListings = () => {
         ? Properties
         : Properties.filter((listing) => listing.type === filteredType);
 
-    return (
-      <>
-        <div className="mt-4 space-y-4">
-          {filteredListings.map((listing, index) => (
-            <div
-              key={index}
-              className="max-w-250 h-70 mx-auto bg-white rounded-lg shadow-lg overflow-hidden flex"
-            >
-              <ImageSlider images={listing.images || ["/default-image.jpg"]} />
-              <div className="w-1/2 p-6 flex flex-col justify-between">
-                <div>
-                  <h2
-                    className="text-xl font-semibold text-gray-800 cursor-pointer hover:underline"
-                    onClick={() => navigate(`/properties/${listing.id}`)}
-                  >
-                    {listing.location}
-                  </h2>
-                  <p className="text-gray-600 mt-2 text-sm">
-                    {listing.description}
-                  </p>
+        return (
+          <>
+            <div className="mt-4 space-y-4 px-4 sm:px-6 lg:px-8">
+              {filteredListings.map((listing, index) => (
+                <div
+                  key={index}
+                  className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg overflow-hidden flex flex-col md:flex-row"
+                >
+                  <div className="w-full md:w-1/2">
+                    <ImageSlider images={listing.images || ["/default-image.jpg"]} />
+                  </div>
+                  <div className="w-full md:w-1/2 p-4 flex flex-col justify-between">
+                    <div>
+                      <h2
+                        className="text-xl font-semibold text-gray-800 cursor-pointer hover:underline"
+                        onClick={() => navigate(`/properties/${listing.id}`)}
+                      >
+                        {listing.type}
+                      </h2>
+                      <p className="text-gray-600 mt-2 text-sm">
+                        {listing.description}
+                      </p>
+                      <span className="text-[#9D9D9D]">{listing.price} JOD / mth</span>
+                    </div>
+                    <div className="mt-4">
+                      <p className="text-gray-800 font-semibold">
+                        {listing.location}
+                         
+                      </p>
+                     
+                      <button
+                        onClick={() => navigate(`/booking/${listing.id}`)}
+                        className="mt-4 bg-[#0C2BA1] hover:bg-[#9D9D9D] text-white py-2 px-4 rounded-lg w-full md:w-auto"
+                      >
+                        Quick Quote
+                      </button>
+                    </div>
+                  </div>
                 </div>
-                <div className="mt-4">
-                  <p className="text-gray-800 font-semibold">
-                    {listing.type}:{" "}
-                    <span className="text-[#9D9D9D]">
-                      {listing.price} JOD / mth
-                    </span>
-                  </p>
-                  <button
-                    onClick={() => navigate(`/booking/${listing.id}`)}
-                    className="mt-6 bg-[#0C2BA1] hover:bg-[#9D9D9D] text-white py-2 px-4 rounded-lg w-50 ml-5"
-                  >
-                    Quick Quote
-                  </button>
-                </div>
-              </div>
+              ))}
             </div>
-          ))}
-        </div>
-      </>
-    );
-  }
+          </>
+        );
+      } 
 
   return (
     <>
