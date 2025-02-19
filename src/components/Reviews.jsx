@@ -69,7 +69,12 @@ function Reviews({ officeId }) {
         confirmButtonColor: '#0C2BA1'
       });
       return;
+    }else if(user.flage == false) {
+      alert("You have to book the office before write the review!");
+      return;
     }
+
+    console.log("useeeeeeeeeeeeeeeer       "+user.flage)
 
     const reviewPayload = {
       ...reviewData,

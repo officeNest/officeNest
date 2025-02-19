@@ -24,6 +24,8 @@ function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  
+
   const handleLogout = () => {
     dispatch(logoutUser());
     navigate("/");

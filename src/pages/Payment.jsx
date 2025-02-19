@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { ref, set } from "firebase/database";
+import { ref, set,update } from "firebase/database";
 import { db } from "/src/firebase.jsx";
 import Swal from "sweetalert2";
 import { getAuth } from "firebase/auth";
@@ -24,6 +24,7 @@ import { getAuth } from "firebase/auth";
   useEffect(() => {
     console.log("Extracted propertyId:", propertyId);
   }, [propertyId]);
+  
 
 
   //////////////////////////////////////////////////
@@ -137,23 +138,38 @@ import { getAuth } from "firebase/auth";
     };
 
     const paymentRef = ref(db, `payments/${user.uid}`);
+    const userRef = ref(db, `users/${user.uid}`);
 
-    set(paymentRef, paymentData)
-      .then(() => {
-        Swal.fire({
-          icon: "success",
-          title: "Payment Successful",
-          text: "Your payment has been confirmed!",
-        });
-        navigate("/");
-      })
-      .catch((error) => {
-        Swal.fire({
-          icon: "error",
-          title: "Payment Failed",
-          text: error.message || "Something went wrong.",
-        });
-      });
+
+    
+  try {
+    // Save payment data
+    await set(paymentRef, paymentData);
+
+    // Update user's flage to true in Firebase
+    await update(userRef, { flage: true });
+
+    // Update the user data in localStorage
+    const storedUserData = JSON.parse(localStorage.getItem("user"));
+    if (storedUserData) {
+      storedUserData.flage = true; // Update flage field
+      localStorage.setItem("user", JSON.stringify(storedUserData)); // Save updated data
+    }
+
+    Swal.fire({
+      icon: "success",
+      title: "Payment Successful",
+      text: "Your payment has been confirmed!",
+    });
+
+    navigate("/");
+  } catch (error) {
+    Swal.fire({
+      icon: "error",
+      title: "Payment Failed",
+      text: error.message || "Something went wrong.",
+    });
+  }
   };
 
   return (
