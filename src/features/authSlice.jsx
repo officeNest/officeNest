@@ -14,6 +14,7 @@ const extractUserData = (user) => {
     emailVerified: user.emailVerified,
     displayName: user.displayName,
     photoURL: user.photoURL,
+    flage: user.flage,
   };
 };
 
@@ -69,9 +70,10 @@ export const signupUser = createAsyncThunk(
         role: "visitor",
         name,
         status: "pending",
+        flage:false,
       });
 
-      const fullUserData = { ...userData, role: "visitor", name };
+      const fullUserData = { ...userData,flage: false, role: "visitor", name };
 
       localStorage.setItem("user", JSON.stringify(fullUserData));
 
@@ -100,12 +102,14 @@ export const loginWithGoogle = createAsyncThunk(
           role: "visitor",
           name: user.displayName || "Guest",
           status: "active",
+          flage: false,
         });
       }
 
       const fullUserData = {
         ...userData,
         role: "visitor",
+        flage: false,
         name: user.displayName || "Guest",
       };
 

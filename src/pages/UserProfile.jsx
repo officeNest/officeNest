@@ -21,6 +21,7 @@ const UserProfile = () => {
     profileImage: user.profileImage || "", // Profile image URL
   });
 
+ 
   const userId = auth.currentUser ? auth.currentUser.uid : null;
 
   // Fetch user data from Firebase
@@ -54,6 +55,7 @@ const UserProfile = () => {
             })
           );
 
+          console.log(user);
           // Update local editable state
           setEditableProfile({
             name: userData.name || "",

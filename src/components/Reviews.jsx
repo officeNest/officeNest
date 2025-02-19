@@ -64,7 +64,12 @@ function Reviews({ officeId }) {
     if (!user || !user.uid) {
       alert('You must be logged in to add a review!');
       return;
+    }else if(user.flage == false) {
+      alert("You have to book the office before write the review!");
+      return;
     }
+
+    console.log("useeeeeeeeeeeeeeeer       "+user.flage)
 
     const reviewPayload = {
       ...reviewData,

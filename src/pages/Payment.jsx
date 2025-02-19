@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { ref, set } from "firebase/database";
+import { ref, set,update } from "firebase/database";
 import { db } from "/src/firebase.jsx";
 import Swal from "sweetalert2";
+import { getAuth } from "firebase/auth";
 
 const Payment = () => {
   const [searchParams] = useSearchParams();
@@ -25,49 +26,74 @@ const Payment = () => {
   useEffect(() => {
     console.log("Extracted propertyId:", propertyId);
   }, [propertyId]);
+  
 
-  const handlePayment = async () => {
-    if (!propertyId) {
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "Property ID is missing. Please try again.",
-      });
-      return;
+  const auth = getAuth();
+
+const handlePayment = async () => {
+  if (!propertyId) {
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: "Property ID is missing. Please try again.",
+    });
+    return;
+  }
+
+  const user = auth.currentUser;
+  if (!user) {
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: "User not authenticated. Please log in.",
+    });
+    return;
+  }
+
+  const paymentData = {
+    propertyId,
+    checkInDate,
+    checkOutDate,
+    numberOfPeople,
+    cardNumber,
+    cardHolder,
+    expiryDate,
+    cvc,
+    timestamp: new Date().toISOString(),
+  };
+
+  const paymentRef = ref(db, `payments/${propertyId}`);
+  const userRef = ref(db, `users/${user.uid}`);
+
+  try {
+    // Save payment data
+    await set(paymentRef, paymentData);
+
+    // Update user's flage to true in Firebase
+    await update(userRef, { flage: true });
+
+    // Update the user data in localStorage
+    const storedUserData = JSON.parse(localStorage.getItem("user"));
+    if (storedUserData) {
+      storedUserData.flage = true; // Update flage field
+      localStorage.setItem("user", JSON.stringify(storedUserData)); // Save updated data
     }
 
-    const paymentData = {
-      propertyId,
-      checkInDate,
-      checkOutDate,
-      numberOfPeople,
-      cardNumber,
-      cardHolder,
-      expiryDate,
-      cvc,
-      timestamp: new Date().toISOString(),
-    };
+    Swal.fire({
+      icon: "success",
+      title: "Payment Successful",
+      text: "Your payment has been confirmed!",
+    });
 
-    // Save payment data to the "payment" collection
-    const paymentRef = ref(db, `payments/${propertyId}`); // Use propertyId as the key
-
-    set(paymentRef, paymentData)
-      .then(() => {
-        Swal.fire({
-          icon: "success",
-          title: "Payment Successful",
-          text: "Your payment has been confirmed!",
-        });
-        navigate("/");
-      })
-      .catch((error) => {
-        Swal.fire({
-          icon: "error",
-          title: "Payment Failed",
-          text: error.message || "Something went wrong.",
-        });
-      });
-  };
+    navigate("/");
+  } catch (error) {
+    Swal.fire({
+      icon: "error",
+      title: "Payment Failed",
+      text: error.message || "Something went wrong.",
+    });
+  }
+};
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-12 px-4 sm:px-6 lg:px-8">

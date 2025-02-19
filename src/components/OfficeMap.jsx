@@ -28,7 +28,7 @@ const PoiMarkers = ({ pois = [], navigate, listings = [] }) => {
             key={String(poi.key)} // Ensure key is a string
             position={poi.location}
             onClick={() => {
-                navigate("/PropertiesDetails", { state: { listing } }); // Pass found listing
+                navigate(`/properties/${listing.id}`); // Pass found listing
               }
             }
           >
