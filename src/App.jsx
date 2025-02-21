@@ -68,12 +68,9 @@ function Layout() {
     "/formData",
     "/request",
   ];
-  
-
 
   return (
     <>
-      {/* Conditionally render Navbar */}
       {!hideNavbarRoutes.includes(location.pathname) && <Navbar />}
       <Routes>
         {/* Public Routes */}
@@ -86,10 +83,10 @@ function Layout() {
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/payment/:id" element={<Payment />} />
+        <Route path="/edit/:id" element={<EditCard />} />
         <Route path="/be-a-landlord" element={<LandlordPage />} />
         <Route path="/booking/:propertyId" element={<Booking />} />
         <Route path="/UserProfile" element={<UserProfile />} />
-        <Route path="/edit/:id" element={<EditCard />} />
 
         {/* Protected Routes */}
         <Route

@@ -32,7 +32,7 @@ function Nav() {
             </Link>
 
             <Link 
-              to="/properties"
+              to="/my"
               className="hidden sm:flex items-center px-3 py-2 text-gray-600 hover:text-[#0C2BA1] transition-colors duration-200"
             >
               <Building className="h-5 w-5" />

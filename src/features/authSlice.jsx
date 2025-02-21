@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { auth, db, googleProvider } from "../firebase";
-import { ref, set, get } from "firebase/database";
+import { ref, set, get, onValue } from "firebase/database";
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
@@ -13,25 +13,24 @@ const extractUserData = (user) => {
     uid: user.uid,
     email: user.email,
     emailVerified: user.emailVerified,
-    displayName: user.displayName || "Guest",
-    photoURL: user.photoURL || "",
+    displayName: user.displayName,
+    photoURL: user.photoURL,
+    flage: user.flage,
   };
 };
 
+// Load user from localStorage if available
 const loadUserFromStorage = () => {
   const storedUser = localStorage.getItem("user");
   return storedUser ? JSON.parse(storedUser) : null;
 };
 
+// Async thunk for logging in a user
 export const loginUser = createAsyncThunk(
   "auth/login",
   async ({ email, password }, { rejectWithValue }) => {
     try {
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const userData = extractUserData(userCredential.user);
 
       const userRef = ref(db, `users/${userCredential.user.uid}`);
@@ -53,15 +52,12 @@ export const loginUser = createAsyncThunk(
   }
 );
 
+// Async thunk for signing up a new user
 export const signupUser = createAsyncThunk(
   "auth/signup",
   async ({ email, password, name }, { rejectWithValue }) => {
     try {
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
       const userData = extractUserData(user);
 
@@ -71,9 +67,11 @@ export const signupUser = createAsyncThunk(
         role: "visitor",
         name,
         status: "pending",
+        flage:false,
       });
 
-      const fullUserData = { ...userData, role: "visitor", name };
+      const fullUserData = { ...userData,flage: false, role: "visitor", name };
+
       localStorage.setItem("user", JSON.stringify(fullUserData));
       return fullUserData;
     } catch (error) {
@@ -82,6 +80,7 @@ export const signupUser = createAsyncThunk(
   }
 );
 
+// Async thunk for logging in with Google
 export const loginWithGoogle = createAsyncThunk(
   "auth/loginWithGoogle",
   async (_, { rejectWithValue }) => {
@@ -100,12 +99,14 @@ export const loginWithGoogle = createAsyncThunk(
           role: "visitor",
           name: user.displayName || "Guest",
           status: "active",
+          flage: false,
         });
       }
 
       const fullUserData = {
         ...userData,
         role: "visitor",
+        flage: false,
         name: user.displayName || "Guest",
       };
       localStorage.setItem("user", JSON.stringify(fullUserData));
@@ -125,6 +126,7 @@ export const logoutUser = createAsyncThunk(
   }
 );
 
+// Create the auth slice
 const authSlice = createSlice({
   name: "auth",
   initialState: {
@@ -138,6 +140,12 @@ const authSlice = createSlice({
       state.user = null;
       state.role = "visitor";
       localStorage.removeItem("user");
+    },
+    updateUserRole: (state, action) => {
+      if (state.user) {
+        state.user.role = action.payload;
+        state.role = action.payload;
+      }
     },
   },
   extraReducers: (builder) => {
@@ -185,5 +193,6 @@ const authSlice = createSlice({
   },
 });
 
-export const { logout } = authSlice.actions;
+// Export actions and reducer
+export const { logout, updateUserRole } = authSlice.actions;
 export default authSlice.reducer;

@@ -57,9 +57,9 @@ const FeaturedOffices = () => {
                 className="w-full h-48 object-cover"
               />
               <div className="p-4">
-                <h3 className="text-xl font-semibold">{office.location}</h3>
-                <p className="text-gray-600">{office.type}</p>
-                <p className="text-lg font-bold text-[#0C2BA1]">${office.price}/month</p>
+                <h3 className="text-xl font-semibold">{office.type}</h3>
+                <p className="text-gray-600">{office.location}</p>
+                <p className="text-lg font-bold text-[#0C2BA1]">{office.price}JD/month</p>
                 <button className="mt-4 w-full bg-[#0C2BA1] text-white px-4 py-2 rounded-lg hover:bg-[#00104B] transition">
                   Quick Now
                 </button>
