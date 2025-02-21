@@ -11,5 +11,37 @@
   "ما هو افضل متصفح": "يعتمد ذلك على احتياجاتك، لكن Google Chrome و Mozilla Firefox و Microsoft Edge من أفضل المتصفحات.",
   "كيف احسن مهاراتي البرمجية": "تمرّن كثيرًا، ابحث عن مشاريع لبنائها، اقرأ الأكواد المفتوحة المصدر، وحاول المشاركة في تحديات البرمجة!",
   "شكرا": "العفو! إذا احتجت أي مساعدة أخرى، لا تتردد في سؤالي. 😊",
-  "باي": "مع السلامة! أتمنى لك يومًا رائعًا! 👋"
+  "باي": "مع السلامة! أتمنى لك يومًا رائعًا! 👋",
+  "من هو افضل لاعب كرة قدم": "يعتمد على رأيك الشخصي! البعض يفضل ميسي، والبعض الآخر يفضل رونالدو! ⚽",
+  "من هو افضل مغني": "هذا يعتمد على ذوقك الموسيقي! هل تحب البوب أم الراب أم شيء آخر؟ 🎵",
+  "احكي لي نكتة": "أكيد! لماذا البرمجيون لا يحبون الشمس؟ لأنها مليئة بالأخطاء! 😂",
+  "ما هو طعامك المفضل": "أنا شات بوت، لكن إذا كنت إنسانًا، ربما كنت سأحب البيتزا! 🍕",
+  "كيف أذاكر بفعالية": "قسم وقتك إلى جلسات قصيرة، استخدم تقنية بومودورو، واكتب ملاحظات مختصرة! 📖",
+  "كيف أكون أكثر إنتاجية": "ضع أهدافًا واضحة، استخدم قائمة مهام، وتجنب التشتت أثناء العمل!",
+  "ما هي أفضل طريقة لحفظ المعلومات": "استخدم التكرار المتباعد، وحاول شرح المعلومات لشخص آخر لتتأكد من فهمك! 🧠",
+  "احكي لي نكتة": "أكيد! لماذا المبرمج لم يستطع النوم؟ لأن هناك خطأ في الكود! 😂",
+  "ما هو لونك المفضل": "أنا شات بوت، لكنني أحب اللون الأزرق الرقمي! 💙",
+  "من هو أفضل ممثل": "هذا يعتمد على ذوقك! هل تحب الأفلام الأكشن أم الكوميديا أم الدراما؟ 🎬",
+  "من هو أذكى شخص في العالم": "هناك الكثير من العباقرة مثل آينشتاين، ستيفن هوكينغ، ونيكولا تسلا! 🧠",
+  "متى يوم الجمعة السوداء": "عادة يكون في آخر يوم جمعة من شهر نوفمبر!",
+  "Hello": "Hey there! How can I help you? 😊",
+  "Hi": "Hi! What can I do for you today?",
+  "How are you": "I’m great, thanks for asking! How about you?",
+  "What can you do": "I can answer your questions, help with programming, and more! 🚀",
+  "Thanks": "You're welcome! Let me know if you need anything else. 😊",
+  "Goodbye": "Goodbye! Have a wonderful day! 👋",
+  "How can I help you": "You can ask me anything, from programming to AI or general knowledge!",
+  "What is AI": "Artificial Intelligence is a technology that allows machines to learn and make decisions based on data! 📊",
+  "How to use React": "React is a JavaScript library for building user interfaces. You need to install Node.js and use `create-react-app` to get started!",
+  "What is HTML": "HTML is a markup language used to create web pages. It consists of elements like headings, paragraphs, and buttons!",
+  "How to become a programmer": "Start by learning the basics like HTML, CSS, and JavaScript. Then move on to languages like Python or JavaScript and start building projects! 💻",
+  "How to improve my coding skills": "Practice a lot, build projects, read open-source code, and participate in coding challenges!",
+  "Who is the best football player": "That depends on your opinion! Some prefer Messi, others prefer Ronaldo! ⚽",
+  "Who is the best singer": "That depends on your taste! Do you like pop, rap, or something else? 🎵",
+  "Tell me a joke": "Sure! Why do programmers hate the sun? Because it’s full of bugs! 😂",
+  "What’s your favorite food": "I’m just a chatbot, but if I were human, I’d probably love pizza! 🍕",
+  "How to study effectively": "Break your study time into short sessions, use the Pomodoro technique, and take concise notes! 📖",
+  "How to be more productive": "Set clear goals, use a to-do list, and minimize distractions while working!",
+  "Best way to retain information": "Use spaced repetition and try explaining the information to someone else to reinforce your understanding! 🧠"
+
 }

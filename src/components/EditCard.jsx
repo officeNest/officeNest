@@ -1,10 +1,11 @@
-import React, { useState } from "react";
-import axios from "axios"; 
-import Nav from "./Nav";
-import { useNavigate } from 'react-router-dom';
-export default function FormData() {
-  <Nav/>
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+
+const EditCard = () => {
+  const { id } = useParams();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     name: "",
     type: "",
@@ -13,73 +14,84 @@ export default function FormData() {
     capacity: "",
     status: "Available",
     price: "",
-    images: [],
+    images: "",
     video: null,
     approvment: true,
     description: "",
-    ownerId: "",
     latitude: "",
     longitude: "",
   });
 
+  useEffect(() => {
+    fetchProperty();
+  }, [id]);
+
+  const fetchProperty = async () => {
+    try {
+      const response = await axios.get(
+        `https://officenest-380c1-default-rtdb.firebaseio.com/properties/${id}.json`
+      );
+      
+      if (response.data) {
+        setFormData({
+          ...response.data,
+          images: Array.isArray(response.data.images) 
+            ? response.data.images.join(', ')
+            : response.data.images
+        });
+      }
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching property:", error);
+      alert("Failed to fetch property details.");
+      setLoading(false);
+    }
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const user = JSON.parse(localStorage.getItem("user"));
-    if (!user || !user.uid) {
-      alert("You must be logged in to add a property!");
-      return;
-    }
-
-    const firebaseUrl = `https://officenest-380c1-default-rtdb.firebaseio.com/properties.json`;
-
-    const propertyData = {
+    const updatedData = {
       ...formData,
-      images: formData.images.split(",").map((url) => url.trim()),
-      ownerId: user.uid,
+      images: formData.images.split(',').map(url => url.trim()),
       lat: formData.latitude,
       lng: formData.longitude,
     };
 
-
     try {
-      await axios.post(firebaseUrl, propertyData);
-      alert("Property Added Successfully!");
-      setFormData({
-        name: "",
-        type: "",
-        location: "",
-        size: "",
-        capacity: "",
-        status: "Available",
-        price: "",
-        images: [],
-        video: null,
-        approvment: false,
-        description: "",
-        ownerId: "",
-        latitude: "",
-        longitude: "",
-      });
+      await axios.put(
+        `https://officenest-380c1-default-rtdb.firebaseio.com/properties/${id}.json`,
+        updatedData
+      );
+      alert("Property Updated Successfully!");
       navigate('/my');
     } catch (error) {
-      console.error("Error adding property:", error);
-      alert("Failed to add property.");
+      console.error("Error updating property:", error);
+      alert("Failed to update property.");
     }
   };
 
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="text-lg font-semibold text-gray-600">Loading...</div>
+      </div>
+    );
+  }
+
   return (
-    <>
-    
     <div className="relative flex flex-col justify-center min-h-screen overflow-hidden bg-gray-50 pt-20">
       <div className="w-full p-6 m-auto bg-white rounded-md shadow-xl ring-2 ring-indigo-600 lg:max-w-2xl">
-        <h1 className="text-3xl font-semibold text-center text-indigo-700 underline uppercase decoration-wavy">
-          Add Property
+        <h1 className="text-3xl font-semibold text-center text-indigo-700 uppercase">
+          Edit Property
         </h1>
         <form className="mt-6" onSubmit={handleSubmit}>
           <div className="mb-2">
@@ -88,10 +100,9 @@ export default function FormData() {
               type="text"
               name="name"
               className="w-full px-4 py-2 mt-2 border-2 border-gray-500 rounded-md focus:border-indigo-600 focus:ring focus:ring-indigo-300"
-              placeholder="Modern Co-Working Space in Downtown"
+              value={formData.name}
               onChange={handleChange}
               required
-              value={formData.name}
             />
           </div>
 
@@ -100,9 +111,9 @@ export default function FormData() {
             <select
               name="type"
               className="w-full px-4 py-2 mt-2 border-2 border-gray-500 rounded-md focus:border-indigo-600 focus:ring focus:ring-indigo-300"
+              value={formData.type}
               onChange={handleChange}
               required
-              value={formData.type}
             >
               <option value="">Select Type</option>
               <option value="Private Office">Private Office</option>
@@ -118,10 +129,9 @@ export default function FormData() {
               type="text"
               name="location"
               className="w-full px-4 py-2 mt-2 border-2 border-gray-500 rounded-md focus:border-indigo-600 focus:ring focus:ring-indigo-300"
-              placeholder="123 Main Street, New York, NY"
+              value={formData.location}
               onChange={handleChange}
               required
-              value={formData.location}
             />
           </div>
 
@@ -131,10 +141,9 @@ export default function FormData() {
               type="number"
               name="latitude"
               className="w-full px-4 py-2 mt-2 border-2 border-gray-500 rounded-md focus:border-indigo-600 focus:ring focus:ring-indigo-300"
-              placeholder="Enter latitude"
+              value={formData.latitude}
               onChange={handleChange}
               required
-              value={formData.latitude}
             />
           </div>
 
@@ -144,10 +153,9 @@ export default function FormData() {
               type="number"
               name="longitude"
               className="w-full px-4 py-2 mt-2 border-2 border-gray-500 rounded-md focus:border-indigo-600 focus:ring focus:ring-indigo-300"
-              placeholder="Enter longitude"
+              value={formData.longitude}
               onChange={handleChange}
               required
-              value={formData.longitude}
             />
           </div>
 
@@ -156,10 +164,9 @@ export default function FormData() {
             <textarea
               name="description"
               className="w-full px-4 py-2 mt-2 border-2 border-gray-500 rounded-md focus:border-indigo-600 focus:ring focus:ring-indigo-300"
-              placeholder="Description"
+              value={formData.description}
               onChange={handleChange}
               required
-              value={formData.description}
             />
           </div>
 
@@ -169,10 +176,9 @@ export default function FormData() {
               type="number"
               name="size"
               className="w-full px-4 py-2 mt-2 border-2 border-gray-500 rounded-md focus:border-indigo-600 focus:ring focus:ring-indigo-300"
-              placeholder="500"
+              value={formData.size}
               onChange={handleChange}
               required
-              value={formData.size}
             />
           </div>
 
@@ -182,10 +188,9 @@ export default function FormData() {
               type="number"
               name="capacity"
               className="w-full px-4 py-2 mt-2 border-2 border-gray-500 rounded-md focus:border-indigo-600 focus:ring focus:ring-indigo-300"
-              placeholder="Up to 10"
+              value={formData.capacity}
               onChange={handleChange}
               required
-              value={formData.capacity}
             />
           </div>
 
@@ -195,48 +200,59 @@ export default function FormData() {
               type="text"
               name="price"
               className="w-full px-4 py-2 mt-2 border-2 border-gray-500 rounded-md focus:border-indigo-600 focus:ring focus:ring-indigo-300"
-              placeholder="$500/month"
+              value={formData.price}
               onChange={handleChange}
               required
-              value={formData.price}
             />
           </div>
 
           <div className="mb-2">
-          <label className="text-gray-700">Image URLs (comma separated)</label>
+            <label className="text-gray-700">Image URLs (comma separated)</label>
             <input
               type="text"
               name="images"
               className="w-full px-4 py-2 mt-2 border-2 border-gray-500 rounded-md focus:border-indigo-600 focus:ring focus:ring-indigo-300"
-              placeholder="Enter image URLs separated by commas"
+              value={formData.images}
               onChange={handleChange}
               required
-              value={formData.images}
             />
           </div>
 
           <div className="mb-2">
-            <label className="text-gray-700">Upload Video</label>
-            <input
-              type="file"
-              name="video"
-              accept="video/*"
+            <label className="text-gray-700">Approval Status</label>
+            <select
+              name="approvment"
               className="w-full px-4 py-2 mt-2 border-2 border-gray-500 rounded-md focus:border-indigo-600 focus:ring focus:ring-indigo-300"
+              value={formData.approvment}
               onChange={handleChange}
-            />
+            >
+              <option value={true}>Approved</option>
+              <option value={false}>Not Approved</option>
+            </select>
           </div>
 
           <div className="mb-6">
             <button
               type="submit"
-              className="h-10 px-5 text-indigo-100 bg-indigo-700 rounded-lg w-full hover:bg-indigo-800 transition"
+              className="w-full px-4 py-2 text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 transition-colors duration-200"
             >
-              Add Office
+              Update Property
+            </button>
+          </div>
+
+          <div className="mb-6">
+            <button
+              type="button"
+              onClick={() => navigate('/my')}
+              className="w-full px-4 py-2 text-indigo-600 bg-white border-2 border-indigo-600 rounded-lg hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 transition-colors duration-200"
+            >
+              Cancel
             </button>
           </div>
         </form>
       </div>
     </div>
-    </>
   );
-}
+};
+
+export default EditCard;
