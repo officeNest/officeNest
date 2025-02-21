@@ -84,10 +84,9 @@ const Booking = () => {
     }
     return true; // Date and time are available
   };
-
   const handleBooking = async (e) => {
     e.preventDefault();
-
+  
     if (!userId) {
       Swal.fire({
         icon: "error",
@@ -97,7 +96,7 @@ const Booking = () => {
       navigate("/login");
       return;
     }
-
+  
     if (!isTermsAccepted) {
       Swal.fire({
         icon: "error",
@@ -233,7 +232,6 @@ const Booking = () => {
       });
     }
   };
-
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
@@ -247,6 +245,7 @@ const Booking = () => {
         <form onSubmit={handleBooking} className="mt-6 space-y-6">
           {/* Check-in Date and Time */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Check-in Date */}
             <div className="space-y-2">
               <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
                 <CalendarIcon className="w-5 h-5 text-[#0C2BA1]" /> Check-in
@@ -264,6 +263,7 @@ const Booking = () => {
               />
             </div>
 
+            {/* Check-in Time */}
             <div className="space-y-2">
               <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
                 <Clock className="w-5 h-5 text-[#0C2BA1]" /> Check-in Time

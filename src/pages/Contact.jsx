@@ -32,7 +32,7 @@ const ContactUs = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-blue-50">
+    <div className="min-h-screen bg-gradient-to-b from-white to-blue-50 mt-15">
       <div className="container mx-auto px-4 py-16 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -79,7 +79,7 @@ const ContactUs = () => {
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div>
                     <label className="flex items-center text-gray-700 text-lg font-medium mb-2">
-                      <User size={20} className="text-[#0C2BA1] mr-2" />
+                      <User className="text-[#0C2BA1] mr-2" />
                       Name
                     </label>
                     <input
@@ -95,7 +95,7 @@ const ContactUs = () => {
 
                   <div>
                     <label className="flex items-center text-gray-700 text-lg font-medium mb-2">
-                      <Mail size={20} className="text-[#0C2BA1] mr-2" />
+                      <Mail className="text-[#0C2BA1] mr-2" />
                       Email
                     </label>
                     <input
@@ -111,7 +111,7 @@ const ContactUs = () => {
 
                   <div>
                     <label className="flex items-center text-gray-700 text-lg font-medium mb-2">
-                      <MessageSquare size={20} className="text-[#0C2BA1] mr-2" />
+                      <MessageSquare className="text-[#0C2BA1] mr-2" />
                       Message
                     </label>
                     <textarea
@@ -131,7 +131,7 @@ const ContactUs = () => {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
-                    <Send size={20} />
+                    <Send/>
                     Send Message
                   </motion.button>
                 </form>

@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { ref, get } from "firebase/database";
+import { ref, get, update } from "firebase/database";  // Add update from Firebase
 import { db } from "../firebase";
 
 // Async thunk to fetch offices from Firebase
@@ -21,6 +21,22 @@ export const fetchOffices = createAsyncThunk(
       } else {
         return rejectWithValue("No properties found.");
       }
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+// Async thunk for soft deleting an office (updating its 'deleted' status)
+export const softDeleteOffice = createAsyncThunk(
+  "offices/softDeleteOffice",
+  async (officeId, { rejectWithValue }) => {
+    try {
+      const officeRef = ref(db, `properties/${officeId}`);
+      await update(officeRef, {
+        deleted: true,  // Mark the office as deleted (soft delete)
+      });
+      return officeId; // Return the office ID to update the state locally
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -53,6 +69,20 @@ const officesSlice = createSlice({
         state.offices = action.payload;
       })
       .addCase(fetchOffices.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(softDeleteOffice.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(softDeleteOffice.fulfilled, (state, action) => {
+        state.loading = false;
+        // Update the state by marking the office as deleted locally
+        state.offices = state.offices.map((office) =>
+          office.id === action.payload ? { ...office, deleted: true } : office
+        );
+      })
+      .addCase(softDeleteOffice.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

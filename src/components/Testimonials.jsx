@@ -1,160 +1,68 @@
-import { useEffect, useRef } from "react";
-import KeenSlider from "keen-slider";
-import "keen-slider/keen-slider.min.css"; // Import Keen Slider CSS
+import { useEffect, useState } from "react";
+import { db } from "../firebase"; 
+import { collection, query, orderBy, limit, getDocs } from "firebase/firestore";
 
-const testimonials = [
-  {
-    name: "Emily Johnson",
-    role: "Marketing Specialist",
-    image: "https://randomuser.me/api/portraits/women/44.jpg",
-    rating: 5,
-    review:
-      "Flexora has completely changed the way we book office spaces! The platform is incredibly intuitive, and the virtual tours make decision-making so much easier. Highly recommend it!",
-  },
-  {
-    name: "Michael Smith",
-    role: "Startup Founder",
-    image: "https://randomuser.me/api/portraits/men/32.jpg",
-    rating: 5,
-    review:
-      "I needed a flexible office space for my growing startup, and Flexora was the perfect solution. The seamless booking process and great customer support made the experience exceptional!",
-  },
-  {
-    name: "Sophia Patel",
-    role: "Freelance Designer",
-    image: "https://randomuser.me/api/portraits/women/50.jpg",
-    rating: 4,
-    review:
-      "I've used many coworking space platforms, but none compare to Flexora. The site is fast, the listings are accurate, and the locations are perfect for remote work.",
-  },
-];
-
-const Testimonials = () => {
-  const sliderRef = useRef(null);
-  const prevButtonRef = useRef(null);
-  const nextButtonRef = useRef(null);
-  const prevButtonDesktopRef = useRef(null);
-  const nextButtonDesktopRef = useRef(null);
+function Testimonials() {
+  const [reviews, setReviews] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!sliderRef.current) return;
+    const fetchReviews = async () => {
+      try {
+        const reviewsRef = collection(db, "reviews");
+        const q = query(reviewsRef, orderBy("timestamp", "desc"), limit(5));
+        const querySnapshot = await getDocs(q);
 
-    const keenSlider = new KeenSlider(sliderRef.current, {
-      loop: true,
-      slides: {
-        origin: "center",
-        perView: 1.25,
-        spacing: 16,
-      },
-      breakpoints: {
-        "(min-width: 1024px)": {
-          slides: {
-            origin: "auto",
-            perView: 1.5,
-            spacing: 32,
-          },
-        },
-      },
-    });
-
-    // Attach event listeners for buttons
-    const prevButton = prevButtonRef.current;
-    const nextButton = nextButtonRef.current;
-    const prevButtonDesktop = prevButtonDesktopRef.current;
-    const nextButtonDesktop = nextButtonDesktopRef.current;
-
-    if (prevButton && nextButton && prevButtonDesktop && nextButtonDesktop) {
-      prevButton.addEventListener("click", () => keenSlider.prev());
-      nextButton.addEventListener("click", () => keenSlider.next());
-      prevButtonDesktop.addEventListener("click", () => keenSlider.prev());
-      nextButtonDesktop.addEventListener("click", () => keenSlider.next());
-    }
-
-    return () => {
-      keenSlider.destroy();
+        if (querySnapshot.empty) {
+          console.log("No reviews found in Firestore.");
+          setReviews([]);
+        } else {
+          const reviewsData = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+          console.log("Fetched Reviews:", reviewsData);
+          setReviews(reviewsData);
+        }
+      } catch (error) {
+        console.error("Error fetching reviews:", error);
+        setError("Failed to load reviews. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
     };
+
+    fetchReviews();
   }, []);
 
   return (
-    <section className="bg-gray-50">
-      <div className="mx-auto max-w-[1340px] px-4 py-12 sm:px-6 lg:py-16 xl:py-24">
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3 lg:items-center lg:gap-16">
-          <div className="max-w-xl text-center sm:text-left">
-            <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl">
-              Don't just take our word for it...
-            </h2>
-            <p className="mt-4 text-gray-700">
-              Discover what our satisfied customers have to say about their experiences with Flexora.
-            </p>
+    <section className="py-10 bg-gray-100">
+      <div className="max-w-6xl mx-auto px-4">
+        <h2 className="text-3xl font-semibold text-center mb-6">Testimonials</h2>
 
-            <div className="hidden lg:mt-8 lg:flex lg:gap-4">
-              <button
-                aria-label="Previous slide"
-                ref={prevButtonDesktopRef}
-                className="rounded-full border border-[#0C2BA1] p-3 text-[#0C2BA1] transition hover:bg-[#0C2BA1] hover:text-white"
-              >
-                &#8592;
-              </button>
+        {/* Loading State */}
+        {loading && <p className="text-center text-gray-500">Loading reviews...</p>}
 
-              <button
-                aria-label="Next slide"
-                ref={nextButtonDesktopRef}
-                className="rounded-full border border-[#0C2BA1] p-3 text-[#0C2BA1] transition hover:bg-[#0C2BA1] hover:text-white"
-              >
-                &#8594;
-              </button>
-            </div>
-          </div>
+        {/* Error State */}
+        {error && <p className="text-center text-red-500">{error}</p>}
 
-          {/* Slider Section */}
-          <div className="-mx-6 lg:col-span-2 lg:mx-0">
-            <div ref={sliderRef} className="keen-slider">
-              {testimonials.map((testimonial, index) => (
-                <div key={index} className="keen-slider__slide p-6 bg-white shadow-md rounded-lg">
-                  <div className="flex items-center gap-4">
-                    <img
-                      src={testimonial.image}
-                      alt={testimonial.name}
-                      className="w-12 h-12 rounded-full object-cover"
-                    />
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-900">{testimonial.name}</h3>
-                      <p className="text-sm text-gray-600">{testimonial.role}</p>
-                    </div>
-                  </div>
-                  <div className="mt-4">
-                    <p className="text-yellow-500 text-lg">
-                      {"⭐".repeat(testimonial.rating)}
-                    </p>
-                    <p className="mt-2 text-gray-700">{testimonial.review}</p>
-                  </div>
+        {/* Display Reviews */}
+        {!loading && !error && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {reviews.length > 0 ? (
+              reviews.map((review) => (
+                <div key={review.id} className="bg-white p-6 rounded-lg shadow-lg">
+                  <h3 className="text-xl font-bold">{review.userName}</h3>
+                  <p className="text-gray-600 mt-2">{review.title}</p>
+                  <p className="text-gray-500 mt-1">Rating: ⭐ {review.rating}</p>
                 </div>
-              ))}
-            </div>
-
-            {/* Mobile Navigation */}
-            <div className="mt-4 flex justify-center gap-4 lg:hidden">
-              <button
-                aria-label="Previous slide"
-                ref={prevButtonRef}
-                className="rounded-full border border-[#0C2BA1] p-3 text-[#0C2BA1] transition hover:bg-[#0C2BA1] hover:text-white"
-              >
-                &#8592;
-              </button>
-
-              <button
-                aria-label="Next slide"
-                ref={nextButtonRef}
-                className="rounded-full border border-[#0C2BA1] p-3 text-[#0C2BA1] transition hover:bg-[#0C2BA1] hover:text-white"
-              >
-                &#8594;
-              </button>
-            </div>
+              ))
+            ) : (
+              <p className="text-center col-span-3">No reviews available.</p>
+            )}
           </div>
-        </div>
+        )}
       </div>
     </section>
   );
-};
+}
 
 export default Testimonials;
